@@ -1,0 +1,361 @@
+{
+  "_readme": "Living status tracker. For architecture, history, and code documentation, see RoutineHub-Reloaded.md instead, since that file is narrative and changes slowly, while this one is structured data and changes constantly. colors_styling values are ok, needs_recheck, or broken. features status values are planned, implemented, open_todo, or note.",
+  "reset": {
+    "date": "2026-09-13",
+    "reason": "RoutineHub replaced the navbar menu entirely, from a flat dropdown list to a categorized slide out sidebar, Home, account name, Community, Create New, a collapsible Channels section with a New and Updated channel not seen before, a collapsible Account section with Settings, CreatorHub, My Purchases, and a new HubSign item, plus a promotional banner and social icons. The CSS build filename has also changed twice more since the last stylesheet audit. Every page colors_styling value was reset to needs_recheck again as a result, on the explicit assumption that if the navbar changed this much, other pages likely did too.",
+    "note": "The new sidebar only renders for an authenticated session. A live automated check without login only reaches the old flat menu. Raw HTML from the user is needed before building any fix for this specific component, rather than guessing selectors from a screenshot or the compiled CSS alone, since neither reliably confirms the real class names."
+  },
+  "stylesheet_audit": {
+    "reference_file": "RoutineHub-Reloaded-Theme-Audit.md",
+    "runs": [
+      {
+        "date": "2026-09-10",
+        "source_css": "main.min.260905-184801.css",
+        "their_classes_total": 569,
+        "overlap_with_ours": 71,
+        "gap_rh_prefixed": 292,
+        "gap_generic_noise": 206
+      },
+      {
+        "date": "2026-09-11",
+        "source_css": "main.min.260911-200127.css",
+        "their_classes_total": 675,
+        "overlap_with_ours": 71,
+        "gap_rh_prefixed": 395,
+        "gap_generic_noise": 209,
+        "new_since_previous_run": 105,
+        "removed_from_gap_since_previous_run": 2
+      }
+    ],
+    "top_findings": [
+      "rh-comment and rh-comment-thread look like a separate comment system from the #feedback and article.media based one built for the shortcut page. Not confirmed yet, needs investigating.",
+      "rh-segmented is a native segmented control component. Directly relevant to the planned Authored view mode switcher, since Grid, List, Detailed is exactly that kind of control.",
+      "rh-skill prefixed classes point to a Skill detail page, structurally parallel to the shortcut detail page, previously unknown to this project.",
+      "rh-checkin-board appeared in the 2026-09-11 run. Looks like a leaderboard or shared view of check ins across multiple users, separate from the existing single user check in card.",
+      "A large rh-box and rh-boxes family appeared in the 2026-09-11 run with terminology like state creating, state queued, state ready, and an SSH command panel. Suggests some kind of sandbox or cloud environment feature. Flagged as unclear, not guessed at further."
+    ]
+  },
+  "cross_cutting": [
+    {
+      "name": "Theme trigger logic",
+      "status": "note",
+      "description": "Done and verified live in version 1.0.0-alpha22, in both Chromium and WebKit. Replaced the prefers-color-scheme media query with a JS driven .rhe-dark class on the html element, computed as OS prefers dark or their data-theme=dark, kept live via a matchMedia listener and a MutationObserver on the attribute. Confirmed the exact previously identified gap is closed, forcing data-theme=dark while OS is light now flips a real page's card background to our own color live, no reload."
+    },
+    {
+      "name": "Toggle icon mismatch",
+      "status": "note",
+      "description": "Done and verified live in version 1.0.0-alpha22. Their dark state toggle visuals turned out to be plain html[data-theme=dark] CSS with hardcoded values, not aria-checked driven, so those exact values were re-keyed onto .rhe-dark, and aria-checked itself now syncs to the actual effective theme. Verified the exact reported scenario, OS dark with their attribute forced to light, and confirmed the icon renders fully dark while their data-theme attribute stays untouched underneath."
+    }
+  ],
+  "pages": [
+    {
+      "name": "Site wide chrome",
+      "url": null,
+      "description": "Navbar, footer, dropdowns, search overlay. Not a single page.",
+      "last_checked": "2026-09-13",
+      "colors_styling": "needs_recheck",
+      "colors_note": "RoutineHub replaced the flat navbar-menu dropdown with a slide out sidebar, .rh-rail, confirmed from a real view source export of the logged in page. The sidebar's dark mode theming is now implemented and rigorously verified, real markup injected into the real live page so their actual native CSS was loaded alongside it, computed styles sampled before and after forcing data-theme=dark, every property matched our variables exactly. Not yet checked, whether the rest of site wide chrome, the old navbar and navbar-menu search recolor fix, and search overlay theming, are still relevant given the new sidebar now contains its own search button, .rh-rail__search, in a different location entirely.",
+      "features": [
+        {
+          "name": "Changelog quick access button on the shortcut page CTA row",
+          "status": "implemented"
+        },
+        {
+          "name": "Hamburger menu and dropdown theming, .dropdown-menu plus .dropdown-content",
+          "status": "implemented"
+        },
+        {
+          "name": "Sort dropdown theming",
+          "status": "implemented"
+        },
+        {
+          "name": "Search overlay background theming",
+          "status": "implemented"
+        },
+        {
+          "name": "Search active navbar recolor fix, keepNavbarThemedDuringSearch",
+          "status": "implemented",
+          "note": "Not verified live. debugNavbarSearchIssue debug logging is in place but no console output has been captured yet. Remove the debug function once this is confirmed one way or another."
+        },
+        {
+          "name": "Sidebar navigation theming, .rh-rail",
+          "status": "implemented",
+          "note": "Own rh-rail palette re-keyed to this project's --rh-* variables rather than their native gray purple colors. rh-rail__count and rh-rail__join left native on purpose, same reasoning as other semantic or brand colors left alone elsewhere. Fixed in version 1.0.0-alpha24, the theme toggle's wrapper reused the navbar-item class unrelated to its original meaning, which picked up the top bar's surface-2 background as a mismatched patch. Now overridden to transparent specifically inside rh-rail, verified live with no effect on the real top bar usage of the same class."
+        },
+        {
+          "name": "Investigate whether keepNavbarThemedDuringSearch and debugNavbarSearchIssue are now partially obsolete",
+          "status": "open_todo",
+          "note": "Search now lives inside rh-rail__search rather than a separate full screen overlay triggered independently. Not yet investigated whether the old navbar and search recolor bug this code targets even still applies the same way."
+        }
+      ]
+    },
+    {
+      "name": "Homepage",
+      "url": "/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "colors_note": "Checked before the site added its Stories carousel, Build with AI tile band, .rh-aicard grids, and Best Sellers topgrid, none of which have been looked at.",
+      "discovered_gaps": [
+        "rh-proof-detail",
+        "rh-proof-headline",
+        "rh-topcard--heatseeker"
+      ],
+      "features": [
+        {
+          "name": "Margin and gap audit",
+          "status": "open_todo",
+          "note": "Explicit request, not started."
+        }
+      ]
+    },
+    {
+      "name": "Feed",
+      "url": "/feed/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "colors_note": "The main feed listing itself.",
+      "discovered_gaps": [
+        "rh-devcard__avatar",
+        "rh-devcard__name",
+        "rh-devcard__stats",
+        "rh-checkin__btn",
+        "rh-checkin__btn--done",
+        "rh-checkin__stats",
+        "rh-feed-post__avatar",
+        "rh-feed-post__handle",
+        "rh-feed-post__react-btn",
+        "rh-feed-composer__avatar",
+        "rh-feed-composer__foot",
+        "rh-feed-composer__hint",
+        "rh-feed-daygroup",
+        "rh-feed-spinner",
+        "rh-feed-tab",
+        "rh-endless-end",
+        "rh-endless-sentinel",
+        "rh-endless-spinner",
+        "rh-checkin-board"
+      ],
+      "features": [],
+      "sub_pages": [
+        {
+          "name": "Announcements channel",
+          "url": "/feed/channel/announcements/",
+          "last_checked": null,
+          "colors_styling": "needs_recheck",
+          "features": []
+        },
+        {
+          "name": "General channel",
+          "url": "/feed/channel/general/",
+          "last_checked": null,
+          "colors_styling": "needs_recheck",
+          "features": []
+        },
+        {
+          "name": "Shortcut Feed channel",
+          "url": "/feed/channel/shortcut-feed/",
+          "last_checked": null,
+          "colors_styling": "needs_recheck",
+          "features": [],
+          "note": "This tab exists per the feed tab bar markup. Never visited."
+        },
+        {
+          "name": "Shortcuts Help channel",
+          "url": "/feed/channel/shortcuts-help/",
+          "last_checked": null,
+          "colors_styling": "needs_recheck",
+          "features": [],
+          "note": "This tab exists per the feed tab bar markup. Never visited."
+        },
+        {
+          "name": "Single post entry",
+          "url": "/feed/post/<uuid>/",
+          "last_checked": null,
+          "colors_styling": "needs_recheck",
+          "features": []
+        }
+      ]
+    },
+    {
+      "name": "Discover, Shortcuts listing",
+      "url": "/shortcuts/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "colors_note": "Includes the Sort dropdown and pagination, checked together.",
+      "discovered_gaps": [
+        "rh-appcard-stats"
+      ],
+      "features": []
+    },
+    {
+      "name": "Shortcut detail page",
+      "url": "/shortcut/<id>/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "colors_note": "Most heavily worked page in the project.",
+      "discovered_gaps": [
+        "rh-heart",
+        "rh-hero-header__qr",
+        "rh-hero-header__qr-title",
+        "rh-markdown"
+      ],
+      "features": [
+        {
+          "name": "Changelog quick access button",
+          "status": "implemented"
+        },
+        {
+          "name": "Hero metadata, creator on its own line, Version, iOS, and Updated added",
+          "status": "implemented"
+        },
+        {
+          "name": "Required Apps swapped in for the ad free pitch",
+          "status": "implemented"
+        },
+        {
+          "name": "Free Stats card, real hearts, feedback, referrers, and entry counts",
+          "status": "implemented"
+        },
+        {
+          "name": "Comment redesign, card treatment, flatten to one level, default collapsed toggle",
+          "status": "implemented"
+        },
+        {
+          "name": "Views info entry under creator info, icon fa-eye",
+          "status": "planned",
+          "note": "Data source unconfirmed. The only views data found anywhere is the owner only get-visit-stats fetch. No public lifetime views number has turned up in any markup seen so far. Needs a decision, owner only reusing the existing fetch, or hold until a public source is found."
+        }
+      ],
+      "sub_pages": [
+        {
+          "name": "Version History, Changelog",
+          "url": "/shortcut/<id>/changelog",
+          "last_checked": null,
+          "colors_styling": "needs_recheck",
+          "colors_note": "RoutineHub redesigned this page's markup entirely once already, from an old stacked button layout to .rh-changelog__entry cards. Treat this as more likely to change again than most pages.",
+          "discovered_gaps": [
+            "rh-changelog__foot"
+          ],
+          "features": []
+        }
+      ]
+    },
+    {
+      "name": "Upload New",
+      "url": "/new/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "features": []
+    },
+    {
+      "name": "Login",
+      "url": "/login/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "features": []
+    },
+    {
+      "name": "Register",
+      "url": "/register/",
+      "last_checked": null,
+      "colors_styling": "needs_recheck",
+      "features": []
+    },
+    {
+      "name": "Profile page",
+      "url": "/user/<username>",
+      "last_checked": "2026-09-10",
+      "colors_styling": "needs_recheck",
+      "colors_note": "Most recent and most rigorously verified page in the project. Pixel sampled against real screenshots across all four combinations of OS preference and their toggle.",
+      "discovered_gaps": [
+        "rh-social-icon",
+        "rh-pubgraph__daylabels",
+        "rh-pubgraph__legend",
+        "rh-pubgraph__month",
+        "rh-pubgraph__total"
+      ],
+      "features": [
+        {
+          "name": "Stat tile icons, accent colored, glyphs matched to the New page's icon language",
+          "status": "implemented"
+        },
+        {
+          "name": "Author Overview split, Followers, Following, and Downloads always visible, the rest behind Show 4 more stats",
+          "status": "implemented",
+          "note": "Labels are hidden but stay screen reader accessible."
+        },
+        {
+          "name": "Condensed Publish Activity, weekly bar chart plus Show full year toggle",
+          "status": "implemented"
+        },
+        {
+          "name": "Authored grid, redundant Free badge dropped",
+          "status": "implemented"
+        },
+        {
+          "name": "Authored view mode switcher, Grid, List, Detailed, similar to the iOS Photos app",
+          "status": "planned",
+          "note": "List and Detailed need per item version and last updated data, which is not in the current Authored grid markup at all. Open question is whether that comes from a bulk API or per item fetches. The native rh-segmented component found in the 2026-09-11 stylesheet audit is worth checking before building a custom control from scratch."
+        },
+        {
+          "name": "rh-pubgraph__minibar-labels bottom padding, about 20 pixels",
+          "status": "planned"
+        },
+        {
+          "name": "Contact section icon circles, Reddit, GitHub, globe, show a native dark maroon background instead of our surface tone",
+          "status": "note",
+          "note": "Minor, not requested, fold in whenever convenient."
+        }
+      ]
+    }
+  ],
+  "not_yet_checked": [
+    {
+      "name": "Account settings, API settings, CreatorHub beta, My Orders beta, Shortcut Sign beta",
+      "note": "All require an authenticated session not available to the browser check tooling."
+    },
+    {
+      "name": "Search results and category filtered listing pages",
+      "note": "Likely share the Discover page's template but never explicitly confirmed."
+    },
+    {
+      "name": "Notifications page",
+      "note": "Quote contrast was fixed early in the project, before this tracker existed. Never re verified since."
+    },
+    {
+      "name": "Skill detail page",
+      "note": "Discovered via the stylesheet audit on 2026-09-10, rh-skill prefixed classes. Not previously known to this project. Structurally parallel to the shortcut detail page but for AI Skills as a content type. Probably the most relevant new surface of everything the audit turned up."
+    },
+    {
+      "name": "Blog",
+      "note": "Discovered via the stylesheet audit on 2026-09-10, rh-blog prefixed classes."
+    },
+    {
+      "name": "Sell, membership, paywall flow",
+      "note": "Discovered via the stylesheet audit on 2026-09-10, rh-sell, rh-wall, rh-pay-sheet, rh-paywall, rh-creator-trial, rh-member-status, rh-subs, and rh-tip prefixed classes. Likely reachable from the homepage proof bar's Start selling link."
+    },
+    {
+      "name": "Search overlay's internal results and browse by category panel",
+      "note": "Discovered via the stylesheet audit on 2026-09-10. Distinct from the search results and category filtered listing pages entry above, this is the panel that renders inside the search overlay itself while typing or browsing by category, not a separate page. We themed the outer .search container but never this internal content, rh-search-form and children, rh-browse and children."
+    },
+    {
+      "name": "Cancel option and danger zone in account settings",
+      "note": "Discovered via the stylesheet audit on 2026-09-11, rh-cancel-option and rh-danger-zone prefixed classes."
+    },
+    {
+      "name": "API keys management",
+      "note": "Discovered via the stylesheet audit on 2026-09-11, rh-keys prefixed classes. Almost certainly part of the already unchecked API settings page."
+    },
+    {
+      "name": "Unclear box or sandbox feature",
+      "note": "Discovered via the stylesheet audit on 2026-09-11, a large rh-box and rh-boxes family including state creating, state queued, state ready, state failed, and an SSH command panel. Terminology suggests a sandbox or cloud environment. Nothing in this project has encountered a feature like this before. Worth asking about directly rather than guessing further."
+    }
+  ],
+  "reset_log": [
+    {
+      "date": "2026-09-10",
+      "reason": "RoutineHub shipped their own native dark mode using a data-theme=dark attribute on the html element, with roughly 731 rule blocks in the CSS build active at the time. This happened between the last full sweep and now. Every page colors_styling value was reset to needs_recheck as a result. Features status is not affected by the reset, since a feature's JS and UX behavior does not depend on the site's own CSS changing.",
+      "note": "Historical last_checked dates are mostly not recorded precisely. Only relative order, via alpha version numbers, is reliably known for anything before this reset date. Where a real date is not known, last_checked is null rather than guessed."
+    }
+  ]
+}
