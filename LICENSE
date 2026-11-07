@@ -1,0 +1,146 @@
+			 ATTRIBUTION-NONCOMMERCIAL-SHAREALIKE SOURCE LICENSE
+			           Version 1.0 (ANC-SA-1.0)
+
+ Copyright (C) 2026 Tojioo. All rights reserved.
+
+ This software and associated documentation files (the "Software") are
+ provided under the following terms and conditions.
+
+							DEFINITIONS
+
+  "Software" refers to the source code, compiled code, documentation,
+and associated files in this distribution.
+
+  "Original Author" refers to the copyright holder(s) named above.
+
+  "Modified Version" refers to any derivative work based on the
+Software.
+
+  "Repository" refers to the original source code repository maintained
+by the Original Author.
+
+						 GRANT OF RIGHTS
+
+  Subject to the terms and conditions of this License, permission is
+hereby granted, free of charge, to any person obtaining a copy of this
+Software to:
+
+  a) Use the Software for any lawful, non-commercial purpose, including
+personal, educational, and research purposes.
+
+  b) Reproduce and distribute verbatim copies of the Software, provided
+that:
+	- No fee or compensation is charged for the distribution
+	- This License and copyright notice are included with all copies
+	- The distribution is made publicly available
+
+  c) Modify the Software and create derivative works, provided that:
+	- Modified Versions are clearly marked as such and distinguished
+	  from the original Software
+	- The original copyright notice and this License are retained
+	- Prominent notice is given that changes were made, including the
+	  date of modification
+
+  d) Publicly distribute Modified Versions, provided that:
+	- No fee or compensation is charged for the distribution
+	- Clear and conspicuous credit is given to the Original Author
+	- A hyperlink or URL reference to the original Repository is
+	  included in the documentation or primary interface
+	- This License or a substantially similar license is applied to the
+	  Modified Version
+	- The source code of the Modified Version is made publicly available
+
+  e) Submit contributions to the original Repository via pull requests
+or other mechanisms provided by the Original Author.
+
+						   RESTRICTIONS
+
+  The following actions are expressly prohibited without prior written
+permission from the Original Author:
+
+  a) Selling, licensing for a fee, or otherwise commercializing the
+Software or any Modified Version, including but not limited to:
+	- Direct sale of the Software or Modified Versions
+	- Bundling with commercial products where the Software is a
+	  substantial component
+	- Offering the Software as a paid service
+	- Charging for access, downloads, or usage of the Software
+
+  b) Distributing Modified Versions without providing clear attribution
+to the Original Author and a reference to the original Repository.
+
+  c) Removing, obscuring, or altering this License, copyright notices,
+or attribution information.
+
+  d) Publicly distributing Modified Versions in a manner that does not
+comply with Section 2(d) above.
+
+  e) Using the name, trademarks, or branding of the Original Author to
+endorse or promote Modified Versions without express written
+permission.
+
+					   PRIVATE MODIFICATIONS
+
+  Modified Versions that do not comply with the public distribution
+requirements in Section 2(d) may only be:
+
+  - Used privately within an individual's or single organization's
+	internal operations
+  - Not distributed, shared, or made accessible to third parties in any
+	form, including but not limited to:
+	  * Public repositories
+	  * Binary distributions
+	  * Software-as-a-Service offerings
+	  * Network-accessible applications
+
+					  DISCLAIMER OF WARRANTY
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
+NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) OR
+ORIGINAL AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+					 LIMITATION OF LIABILITY
+
+  IN NO EVENT SHALL THE ORIGINAL AUTHOR OR COPYRIGHT HOLDER(S) BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+						   TERMINATION
+
+  This License and the rights granted hereunder will terminate
+automatically upon any breach by you of the terms of this License.
+Individuals or entities who have received Modified Versions from you
+under this License, however, will not have their licenses terminated
+provided they remain in full compliance.
+
+					   GENERAL PROVISIONS
+
+  a) This License constitutes the entire agreement between the parties
+with respect to the Software licensed hereunder.
+
+  b) If any provision of this License is held to be unenforceable, such
+provision shall be reformed only to the extent necessary to make it
+enforceable.
+
+  c) This License shall be governed by and construed in accordance with
+the laws of the jurisdiction in which the Original Author resides,
+without regard to its conflict of law provisions.
+
+  d) No modification of this License is valid unless made in writing
+and signed by the Original Author.
+
+							ACCEPTANCE
+
+  By using, copying, modifying, or distributing the Software, you
+indicate your acceptance of this License and all its terms and
+conditions.
