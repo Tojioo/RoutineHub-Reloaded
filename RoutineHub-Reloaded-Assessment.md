@@ -59,6 +59,7 @@ Verification notes under high and medium entries hold the skeptics' corrections.
 - [Observations](#observations) (19)
 - [Docs and tracker corrections](#docs-and-tracker-corrections)
 - [Verified working](#verified-working)
+- [Logged-in pass](#logged-in-pass)
 - [Method and limitations](#method-and-limitations)
 
 ## Live-site compatibility
@@ -77,7 +78,7 @@ Logged out, 2026-11-06. Status: works, partial, broken, not themed or not checke
 | Login and register | Floating label rule | Broken | Now a modal at `/#/login`. Labels at 1.73:1 ([H-08](#h-08)). |
 | Upload New (`/new/`) | Picker and heading rules | Partial | Redesigned and public. Selectors still match ([L-13](#l-13)). |
 | Skill, Prompt, Agent, Plugin, Model, Cherri, Sell, Membership | Generic theming only | Not themed | CTA contrast ([H-06](#h-06)). Only generic rules apply ([L-22](#l-22)). |
-| Notifications, settings, rail, stats page, owner states | Rail theming, stats card | Not checked | Needs a logged-in pass ([I-14](#i-14)). |
+| Notifications, settings, rail, stats card, owner states | Rail theming, stats card | Partial | Markup checked logged in, see [Logged-in pass](#logged-in-pass). Rendered effect not checked. |
 
 ## Theme audit rerun
 
@@ -2444,6 +2445,24 @@ Each linked entry lists the exact edits.
 
 </details>
 
+## Logged-in pass
+
+2026-11-07, signed in as tojioo in the built-in browser. Read-only DOM probes on 5 pages. The userscript is not installed in that browser, so this checks markup and data, not the script's rendered effect. No field values or keys were read.
+
+| Area | Result |
+|---|---|
+| Rail (`.rh-rail`) | Present. All 17 rail classes the script styles still exist. 22 newer ones are unstyled, among them `rh-rail__tree--channels`, `--creatorhub`, `--creatortools`, `rh-rail__treelink--locked`, `rh-rail__join-cta`, `rh-rail__nest` ([L-32](#l-32)). New targets: `/achievements/`, `/creatorhub/`, `/build/`, `/settings#api`. |
+| Rail theme toggle | Wrapper is `navbar-item rh-theme-item rh-rail__theme`. The unconditional `.navbar-item` background still hits it. Confirms the missing alpha24 fix ([M-03](#m-03)). |
+| Theme toggles | 3 per page when logged in, 2 logged out. `syncThemeClass` updates only the first ([H-03](#h-03)). |
+| Owner stats card | `.rh-stats-card` and `.rh-stats-card__btn` match, so the gate works. The native card now has its own number grid (`rh-stats-card__grid`, `__num`, `__sub`), which supports [I-05](#i-05). |
+| Stats endpoints | Both return 200 JSON with the field names the script reads. `top_referrers[].referrer_domain` is a string. The referrer path of [H-01](#h-01) runs on real data. `get-visit-stats` also returns `unique_traffic` (daily counts): a data source for the planned Views entry. |
+| Shortcut CTA row (owner) | New `.rh-intent-card` membership prompt sits inside the CTA row. The cloned Changelog button lands after it. Edit, New Version and RoutinePub are native `rh-cta--secondary`. |
+| Notifications | 15 items, 13 `.rh-notification__quote`, 8 unread. `.notification-card` and `.notification-text` still exist, so they are not dead selectors. This corrects part of [L-28](#l-28). Most `rh-notification__*` parts stay unthemed. |
+| Settings | 21 `.input`, 1 `.textarea`, no `.select`, no `.field-new-control`. All 21 inputs inherit the contrast problem of [H-07](#h-07). Unthemed: `rh-settings-tabs`, `rh-danger-zone*`, `rh-tzpick*`, avatar row. |
+| Profile (owner) | Same 8 stats as logged out. Publish Activity cells use `data-label`, title empty ([H-02](#h-02)). No `rh-segmented`. |
+
+Not covered: `/new/` while signed in, CreatorHub, My Purchases, achievements, `/build/` and the login modal, which only shows when signed out.
+
 ## Method and limitations
 
 - 13 reviewer agents covered one area each: JS logic, CSS cascade, security, four live-page groups, theme audit, accessibility, performance, packaging and license, docs, repo and roadmap. One merge step reduced 170 raw findings to 86.
@@ -2452,6 +2471,6 @@ Each linked entry lists the exact edits.
 - Snapshots: 34 pages fetched with curl, logged out, plus the current stylesheet and site JS. Page scripts were not executed.
 - A jsdom harness ran the script against every snapshot. jsdom has no layout and no cascade. Contrast figures come from CSS analysis, not rendered pixels.
 - Injecting the script into the live page was blocked by the auto-mode classifier. No rendered run on the live site happened.
-- Logged-in pages, the rail, the owner stats card, settings and notifications were not checked.
+- Logged-in pages got a markup-only pass on 2026-11-07. CreatorHub, My Purchases, achievements and `/build/` were not checked.
 - Verification notes for low findings are omitted to keep the file readable.
 - Snapshots, harness and raw agent output live in a temporary folder outside the repo. They are not committed.
