@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
-// @version      1.0.0-alpha23
+// @version      1.0.0-alpha25
 // @license      MIT
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
@@ -16,51 +16,16 @@
 (function () {
 	"use strict";
 
-	// ---- Theme sync: match RoutineHub's own dark mode toggle, not just the OS ----
-	// Our theme activates when EITHER the OS prefers dark OR RoutineHub's own
-	// data-theme=dark attribute is set, their in-app toggle, independent of
-	// the OS setting. Verified via a real four state pixel matrix, OS times
-	// their toggle, against live screenshots. This OR condition is the one
-	// that closes the single confirmed gap, OS light plus their toggle dark,
-	// where cards and body fell through to their native palette while our
-	// unconditional chrome rules still applied. A plain
-	// @media(prefers-color-scheme:dark) query can't express an OR against a
-	// DOM attribute, so the whole dark mode block below is driven by a JS
-	// toggled class, .rhe-dark on the html element, instead of a media
-	// query. Confirmed with a live test in both Chromium and WebKit that
-	// relaxed CSS nesting, bare selectors like body, .modal { ... } inside
-	// html.rhe-dark { ... }, correctly resolves to html.rhe-dark body,
-	// html.rhe-dark .modal { ... } without needing an explicit & prefix on
-	// each one.
-	//
-	// Also drives the toggle's own visual state (icon, knob position) to
-	// match, not just page colors. Their dark visual state turned out to be
-	// driven entirely by plain html[data-theme=dark] CSS with hardcoded
-	// values, not aria-checked, so those exact values are re-keyed onto
-	// html.rhe-dark below. This fixes the reported icon mismatch, OS dark
-	// with their toggle set to light previously showed a sun icon on a
-	// fully dark page, now the icon reflects what is actually rendered
-	// regardless of which signal caused it. aria-checked on their button is
-	// also kept in sync for the same reason, a screen reader should report
-	// the switch as on when the page is actually dark.
-	function syncThemeClass() {
-		const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const theirDark = document.documentElement.getAttribute('data-theme') === 'dark';
-		const effectiveDark = osDark || theirDark;
-		document.documentElement.classList.toggle('rhe-dark', effectiveDark);
-		document.querySelector('.rh-theme-toggle')?.setAttribute('aria-checked', String(effectiveDark));
-	}
+	// Dark styles key on the site's own html[data-theme=dark]. The site sets it from
+	// the stored choice, else the OS preference, and follows OS changes live.
 
-	function initThemeSync() {
-		syncThemeClass();
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeClass);
-		new MutationObserver(syncThemeClass).observe(document.documentElement, {
-			attributes: true,
-			attributeFilter: ['data-theme'],
-		});
+	// Font Awesome icon node. Never build markup from strings: page and API text is untrusted.
+	function icon(name) {
+		const i = document.createElement('i');
+		i.className = `fas ${name}`;
+		i.setAttribute('aria-hidden', 'true');
+		return i;
 	}
-
-	initThemeSync();
 
 	// ---- Dark mode & layout tweaks (gluebyte, Dark Mode RoutineHub v1.1) ----
 	GM.addStyle(
@@ -158,7 +123,7 @@
    width removes the dead space a small fixed-size cluster left behind. */
 .rh-pubgraph__mini { margin-top: 10px; }
 .rh-pubgraph__minibar-row { display: flex; align-items: flex-end; gap: 3px; height: 48px; }
-.rh-pubgraph__minibar { flex: 1 1 0; max-width: 24px; background: var(--rh-accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+.rh-pubgraph__minibar { flex: 1 1 0; max-width: 24px; background: var(--rhe-accent); border-radius: 4px 4px 0 0; min-height: 2px; }
 .rh-pubgraph__minibar-labels { display: flex; gap: 3px; margin-top: 4px; }
 .rh-pubgraph__minibar-labels span { flex: 1 1 0; max-width: 24px; font-size: 10px; text-align: center; white-space: nowrap; overflow: visible; }
 .rh-pubgraph-toggle { margin-top: 0.75em; }
@@ -189,20 +154,20 @@
 	// apply unconditionally rather than only inside the dark-mode block below.
 	GM.addStyle(
 `:root {
-	--rh-bg: #0C1311;
-	--rh-surface-1: #112320;
-	--rh-surface-2: #1D424A;
-	--rh-border: #17302D;
-	--rh-text: #CBD9D7;
-	--rh-accent: #00DBAC;
-	--rh-accent-dim: rgba(0, 219, 172, 0.12);
-	--rh-input-bg: #C7D6D4;
+	--rhe-bg: #0C1311;
+	--rhe-surface-1: #112320;
+	--rhe-surface-2: #1D424A;
+	--rhe-border: #17302D;
+	--rhe-text: #CBD9D7;
+	--rhe-accent: #00DBAC;
+	--rhe-accent-dim: rgba(0, 219, 172, 0.12);
+	--rhe-input-bg: #C7D6D4;
 }
 .footer, .navbar, .navbar-menu, .navbar-dropdown, .dropdown-menu {
-	color: var(--rh-text) !important;
+	color: var(--rhe-text) !important;
 }
 .footer {
-	background-color: var(--rh-surface-1) !important;
+	background-color: var(--rhe-surface-1) !important;
 }
 /* Bulma's dropdown has two layers: .dropdown-menu (positioning wrapper,
    transparent by default) and .dropdown-content (the actual visible card,
@@ -211,22 +176,30 @@
    .dropdown-menu. Covering both classes handles either shape regardless of
    which one carries the real background for a given dropdown instance. */
 .navbar, .navbar-menu, .navbar-dropdown, .dropdown-menu, .navbar-item, .dropdown-content {
-	background-color: var(--rh-surface-2) !important;
+	background-color: var(--rhe-surface-2) !important;
+}
+/* The rail's theme toggle wrapper reuses .navbar-item; keep it transparent. */
+.navbar-item.rh-theme-item, .rh-rail .navbar-item {
+	background-color: transparent !important;
+}
+/* Search browse backdrop sits above the navbar and tints it plum. */
+.rh-browse-backdrop {
+	background: rgba(12, 19, 17, 0.35) !important;
 }
 .footer a, .navbar a, .navbar-item, .dropdown-menu a, .search-button__label {
-	color: var(--rh-accent) !important;
+	color: var(--rhe-accent) !important;
 }
 /* Expanded search bar (tap the navbar search icon) uses Bulma's
    has-background-primary-dark utility class -- the site's brand maroon, not
    theme-aware. Same "always dark chrome" bucket as the navbar/footer above,
    so unconditional rather than dark-mode-gated. */
 .search {
-	background-color: var(--rh-surface-2) !important;
+	background-color: var(--rhe-surface-2) !important;
 }
 .button.is-dark {
-	background-color: var(--rh-surface-2) !important;
-	color: var(--rh-text) !important;
-	border-color: var(--rh-border) !important;
+	background-color: var(--rhe-surface-2) !important;
+	color: var(--rhe-text) !important;
+	border-color: var(--rhe-border) !important;
 }
 /* The site's own CSS has a more specific ".search .button.is-dark" rule
    (its own brand maroon, #61124b) that outranks the plain ".button.is-dark"
@@ -234,28 +207,15 @@
    change that, since specificity is still the tiebreaker between competing
    !important declarations. Needs a selector of matching specificity. */
 .search .button.is-dark {
-	background-color: var(--rh-surface-2) !important;
+	background-color: var(--rhe-surface-2) !important;
 }`);
 
 	GM.addStyle(
-`html.rhe-dark {
-	/* Re-keyed from RoutineHub's own html[data-theme=dark] .rh-theme-toggle
-	   rules, exact values, so the toggle's icon and knob always match what
-	   is actually rendered instead of only their own stored preference. */
-	.rh-theme-toggle {
-		background-color: #3d3a45 !important;
-	}
-	.rh-theme-toggle__knob {
-		transform: translateX(24px) !important;
-		background-color: #d8d8dd !important;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, .55), inset -3px -2px 0 rgba(0, 0, 0, .12) !important;
-	}
-	.rh-theme-toggle__cloud {
-		transform: translate(-32px, 5px) !important;
-	}
-	.rh-theme-toggle__stars {
-		opacity: 1 !important;
-	}
+`html[data-theme=dark] {
+	/* Site variables, re-keyed to our palette. */
+	--rh-text: var(--rhe-text);
+	--rh-text-secondary: rgba(203, 217, 215, 0.75);
+	--rh-border: var(--rhe-border);
 	/* .rh-feed-interstitial, .rh-checkin__label, .rh-feed-post--text
 	   .rh-feed-post__body, .rh-topcard-brief: found via gluebyte's own Dark
 	   Mode RoutineHub v1.2 update, still not independently confirmed here.
@@ -268,11 +228,11 @@
 	   alone (BEM sub-elements keep carrying their own hardcoded color all
 	   session), not on direct evidence. */
 	body, .modal, .shortcut-card, .notification-card, .rh-card, .rh-hero-header, .box, .rh-listrow, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-proof-bar, .rh-feed-interstitial {
-		background-color: var(--rh-bg) !important;
-		color: var(--rh-text) !important;
+		background-color: var(--rhe-bg) !important;
+		color: var(--rhe-text) !important;
 	}
 	body strong, .title, .rh-section-title, .rh-appcard-name, .rh-topcard-name, .rh-listrow-name, .rh-listrow-brief, .heading, .card-content nav, .card-content strong, .card-content small, .level-item, .content h1, .content h2, .content h3, .content h4, .content h5, .content h6, .content table thead td, .content table thead th, pre, .rh-hero-header__title, .rh-hero-header__brief, .rh-card__title, .content, .rh-info-list__value, .rh-release__notes, .notification-text, .rh-stat__value, .textarea, blockquote, .rh-notification__quote, .rh-feed-empty-hint, .rh-changelog__subtitle, .rh-release__version, .rh-changelog__ios, .rh-changelog__downloads, .rh-price, .rh-checkin__label, .rh-appcard-brief, .rh-topcard-brief, .rh-feed-post--text .rh-feed-post__body {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	/* "text-muted" reads as a generic de-emphasis utility (used at least on
 	   the changelog's absolute-time span), not a component-specific class --
@@ -294,7 +254,7 @@
 		color: rgba(203, 217, 215, 0.65) !important;
 	}
 	/* .rh-stat__label keeps its native #777 (fine against the site's own
-	   white card) -- against --rh-surface-2 that's under 2.5:1 contrast, well
+	   white card) -- against --rhe-surface-2 that's under 2.5:1 contrast, well
 	   short of the 4.5:1 minimum. .rh-stat__icon uses the accent color at
 	   full strength rather than a dimmed neutral -- muted-gray-on-dark-teal
 	   read as too washed out to register as an icon at all. */
@@ -302,41 +262,39 @@
 		color: rgba(203, 217, 215, 0.85) !important;
 	}
 	.rh-stat__icon {
-		color: var(--rh-accent) !important;
-	}
-	/* This floating label sits ON TOP of .input (a "transparent-control"
-	   overlay, not a real placeholder -- the input's placeholder is just a
-	   single space). .input keeps a light background intentionally for
-	   native contrast, so the label needs dark text here, not the light
-	   text color used everywhere else against dark cards. */
-	.field-new-control .field-label {
-		color: var(--rh-bg) !important;
-	}
-	a {
-		color: var(--rh-accent) !important;
+		color: var(--rhe-accent) !important;
 	}
 	.rh-topcard, .shortcut .description .content blockquote, code, pre, .field-new-control, .rh-cta--secondary, blockquote, .rh-feed-post, .textarea, .rh-stat, .rh-pubgraph__cell--l0, .rh-feed-composer__submit {
-		background-color: var(--rh-surface-2) !important;
+		background-color: var(--rhe-surface-2) !important;
 	}
 	.card, .rh-card, .rh-hero-header, .box, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-feed-post, .rh-proof-bar, .rh-stat, .rh-feed-interstitial {
-		box-shadow: 0 .5em 1em -.125em var(--rh-accent-dim), 0 0 0 1px rgba(0, 219, 172, 0.05) !important;
+		box-shadow: 0 .5em 1em -.125em var(--rhe-accent-dim), 0 0 0 1px rgba(0, 219, 172, 0.05) !important;
 	}
-	.input, .select select, hr {
-		background-color: var(--rh-input-bg) !important;
+	/* Light fields: set text and background together. */
+	.input, .select select {
+		background-color: var(--rhe-input-bg) !important;
+		color: var(--rhe-bg) !important;
+	}
+	.input::placeholder {
+		color: #4A5553 !important;
+		opacity: 1 !important;
+	}
+	hr {
+		background-color: var(--rhe-border) !important;
 	}
 	.rh-notification--unread {
-		background: var(--rh-accent-dim) !important;
+		background: var(--rhe-accent-dim) !important;
 	}
 	.rh-listrow, .rh-card, .rh-hero-header, .card, .box, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-feed-post, .rh-proof-bar, .rh-stat, .rh-feed-interstitial {
-		border: 1px solid var(--rh-border) !important;
+		border: 1px solid var(--rhe-border) !important;
 	}
-	.textarea::placeholder, .input::placeholder, .rh-feed-composer__textarea::placeholder {
+	.textarea::placeholder, .rh-feed-composer__textarea::placeholder {
 		color: rgba(203, 217, 215, 0.65) !important;
 		opacity: 1 !important;
 	}
 	#feedback .rh-top-comment {
-		background-color: var(--rh-surface-1) !important;
-		border: 1px solid var(--rh-border) !important;
+		background-color: var(--rhe-surface-1) !important;
+		border: 1px solid var(--rhe-border) !important;
 		border-radius: 10px !important;
 		padding: 0.85rem 0.9rem !important;
 		margin-bottom: 0.75rem !important;
@@ -351,14 +309,14 @@
 	   the last direct <span> child (the icon wrapper is the other one), and
 	   title/description are its two children. */
 	.rhnew-card {
-		background: var(--rh-bg) !important;
-		border-color: var(--rh-border) !important;
+		background: var(--rhe-bg) !important;
+		border-color: var(--rhe-border) !important;
 	}
 	.rhnew-card > span:last-of-type > span {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	.rhnew-card .fa-chevron-right {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	/* The page heading above the cards ("Create something new" + subtitle)
 	   sits in a plain unclassed <div>, inline color:#000/#6b7280 directly on
@@ -367,7 +325,7 @@
 	   .rhnew-wrap container; there's exactly one h1 and one p in it (the
 	   cards use spans, not p tags, for their own text), so this is safe. */
 	.rhnew-wrap h1 {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	.rhnew-wrap > div > p {
 		color: rgba(203, 217, 215, 0.65) !important;
@@ -386,14 +344,14 @@
 		background-image: none !important;
 	}
 	.rh-tagline-title, .rh-tagline-sub, .rh-feed-channel-head__title, .rh-feed-channel-head__desc {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	/* Markdown-rendered feed post bodies (.markdown-content) aren't covered by
 	   the .content heading rule above -- headings there carry their own dark
 	   color from the site's prose styles, unlike plain paragraphs which just
 	   inherit and were already readable. */
 	.rh-feed-post__body h1, .rh-feed-post__body h2, .rh-feed-post__body h3, .rh-feed-post__body h4, .rh-feed-post__body h5, .rh-feed-post__body h6, .rh-feed-post__body strong {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	/* .rh-rail: the sidebar navigation that replaced the old flat
 	   navbar-menu dropdown (2026-09-13). RoutineHub already ships full
@@ -412,126 +370,54 @@
 	   markup and their real CSS values, not a screenshot guess, but the
 	   site's own auth-gated rendering couldn't be reached this session. */
 	.rh-rail {
-		background: var(--rh-bg) !important;
-		border-right: 1px solid var(--rh-border) !important;
+		background: var(--rhe-bg) !important;
+		border-right: 1px solid var(--rhe-border) !important;
 	}
 	.rh-rail__close {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 		opacity: 0.65;
 	}
 	.rh-rail__close:hover {
 		opacity: 1;
 	}
 	.rh-rail__search {
-		border: 1px solid var(--rh-border) !important;
-		background: var(--rh-surface-2) !important;
+		border: 1px solid var(--rhe-border) !important;
+		background: var(--rhe-surface-2) !important;
 		color: rgba(203, 217, 215, 0.65) !important;
 	}
 	.rh-rail__search:hover {
-		background: var(--rh-surface-1) !important;
-		color: var(--rh-text) !important;
+		background: var(--rhe-surface-1) !important;
+		color: var(--rhe-text) !important;
 	}
 	.rh-rail__link, .rh-rail__sublink, .rh-rail__treelink {
-		color: var(--rh-text) !important;
+		color: var(--rhe-text) !important;
 	}
 	.rh-rail__link:hover, .rh-rail__sublink:hover, .rh-rail__treelink:hover {
-		background: var(--rh-surface-1) !important;
-		color: var(--rh-accent) !important;
+		background: var(--rhe-surface-1) !important;
+		color: var(--rhe-accent) !important;
 	}
 	.rh-rail__link.is-active, .rh-rail__sublink.is-active {
-		background: var(--rh-accent) !important;
-		color: var(--rh-bg) !important;
+		background: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
 	}
 	.rh-rail__hash, .rh-rail__sublink--locked, .rh-rail__title, .rh-rail__chev, .rh-rail__social a, .rh-rail__toggle {
 		color: rgba(203, 217, 215, 0.65) !important;
 	}
 	.rh-rail__sublink--locked:hover, .rh-rail__chev:hover, .rh-rail__social a:hover, .rh-rail__toggle:hover {
-		background: var(--rh-surface-1) !important;
-		color: var(--rh-text) !important;
+		background: var(--rhe-surface-1) !important;
+		color: var(--rhe-text) !important;
 	}
 	.rh-rail__tree::before, .rh-rail__treelink::before {
-		background: var(--rh-border) !important;
+		background: var(--rhe-border) !important;
 	}
 	.rh-rail__group, .rh-rail__foot, .rh-rail__bottom {
-		border-top: 1px solid var(--rh-border) !important;
+		border-top: 1px solid var(--rhe-border) !important;
 	}
+}
+/* Zero specificity: site !important colors (white text on filled buttons) win. */
+:where(html[data-theme=dark]) :where(a) {
+	color: var(--rhe-accent) !important;
 }`);
-
-	// ---- Keep the navbar themed while the search overlay is active ----
-	// Reported: opening search (from within the hamburger menu) makes the
-	// navbar and navbar-menu itself go native dark-navy instead of staying
-	// themed -- not just the search bar, which already has its own fix
-	// above. No visible evidence in any static HTML capture of what causes
-	// this (no modifier class shows up in any page source seen), so the
-	// likely mechanism is either a class toggled at runtime via JS, or a
-	// CSS sibling-selector rule keyed off .search's own hide/show state --
-	// either way, invisible to a static export and not confidently
-	// targetable with a plain selector. Sidesteps the guessing entirely: an
-	// inline !important style set directly on the elements beats ANY
-	// stylesheet rule regardless of its selector or specificity, so this
-	// just re-asserts our colors every time .search's class list changes
-	// (covers both opening and closing) rather than trying to out-specify
-	// whatever the competing rule turns out to be. Unverified against the
-	// live site -- Cloudflare blocked every attempt to reproduce this
-	// interaction this session, so this is reasoned from the two
-	// screenshots provided, not confirmed fixed firsthand.
-	function keepNavbarThemedDuringSearch() {
-		const navbar = document.querySelector('.navbar');
-		const navbarMenu = document.querySelector('.navbar-menu');
-		const searchPanel = document.querySelector('.search');
-		if (!navbar) return;
-
-		const enforce = () => {
-			[navbar, navbarMenu].forEach(el => {
-				if (!el) return;
-				el.style.setProperty('background-color', 'var(--rh-surface-2)', 'important');
-				el.style.setProperty('color', 'var(--rh-text)', 'important');
-			});
-		};
-
-		enforce();
-		const observer = new MutationObserver(enforce);
-		observer.observe(navbar, { attributes: true, attributeFilter: ['class'] });
-		if (searchPanel) observer.observe(searchPanel, { attributes: true, attributeFilter: ['class'] });
-	}
-
-	// ---- TEMPORARY DEBUG: diagnose the search/navbar color bug ----
-	// Remove this whole function and its call site once diagnosed. Watches
-	// class/style/computed-background on navbar, navbar-menu, search, and
-	// body, and logs every change. To use: open the console, open the
-	// hamburger menu, tap search, and copy back whatever prints under
-	// "[RHE debug]". If keepNavbarThemedDuringSearch() above is already
-	// fully fixing it, this will just show the color staying correct
-	// throughout -- also useful to know.
-	function debugNavbarSearchIssue() {
-		const navbar = document.querySelector('.navbar');
-		const navbarMenu = document.querySelector('.navbar-menu');
-		const searchPanel = document.querySelector('.search');
-		const log = (...args) => console.log('[RHE debug]', ...args);
-
-		const snapshot = label => {
-			log(label, {
-				navbarClass: navbar?.className,
-				navbarBg: navbar && getComputedStyle(navbar).backgroundColor,
-				navbarMenuClass: navbarMenu?.className,
-				navbarMenuBg: navbarMenu && getComputedStyle(navbarMenu).backgroundColor,
-				searchClass: searchPanel?.className,
-				searchBg: searchPanel && getComputedStyle(searchPanel).backgroundColor,
-				bodyClass: document.body.className,
-			});
-		};
-
-		log('elements found:', { navbar: !!navbar, navbarMenu: !!navbarMenu, searchPanel: !!searchPanel });
-		snapshot('initial state');
-
-		[navbar, navbarMenu, searchPanel, document.body].forEach(el => {
-			if (!el) return;
-			new MutationObserver(muts => {
-				muts.forEach(m => log('mutation:', el.className || el.tagName, '-', m.attributeName, 'changed'));
-				snapshot('state after mutation');
-			}).observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
-		});
-	}
 
 	// ---- Changelog quick-access button ----
 	// The "Version history" link normally sits inside the "Latest Release Notes"
@@ -550,7 +436,7 @@
 
 		const btn = versionLink.cloneNode(false);
 		btn.className = 'rh-cta rh-cta--secondary rh-changelog-shortcut';
-		btn.innerHTML = '<i class="fas fa-history"></i> Changelog';
+		btn.append(icon('fa-history'), ' Changelog');
 		ctaRow.appendChild(btn);
 	}
 
@@ -581,7 +467,7 @@
 
 			const span = document.createElement('span');
 			span.className = 'rh-meta-extra';
-			span.innerHTML = `<i class="fas ${config.icon}"></i> ${config.prefix}${value}`;
+			span.append(icon(config.icon), ` ${config.prefix}${value}`);
 			meta.appendChild(span);
 		});
 	}
@@ -625,11 +511,16 @@
 		) ?? document.querySelector('.rh-card');
 		if (!anchor) return;
 
-		const card = document.createElement('div');
-		card.className = 'rh-card rh-free-stats';
-		card.innerHTML = '<h2 class="rh-card__title">Stats</h2><p class="rh-free-stats__status">Loading\u2026</p>';
+		const el = (tag, className, text) => {
+			const node = document.createElement(tag);
+			if (className) node.className = className;
+			if (text != null) node.textContent = text;
+			return node;
+		};
+		const card = el('div', 'rh-card rh-free-stats');
+		const status = el('p', 'rh-free-stats__status', 'Loading\u2026');
+		card.append(el('h2', 'rh-card__title', 'Stats'), status);
 		anchor.before(card);
-		const status = card.querySelector('.rh-free-stats__status');
 
 		const getJson = async endpoint => {
 			const controller = new AbortController();
@@ -654,27 +545,38 @@
 			return;
 		}
 
-		const hearts = engagement?.total_hearts;
-		const feedback = engagement?.total_feedback;
-		const directCount = visits?.direct_entry_count;
-		const internalCount = visits?.internal_entry_count;
-		const referrers = (visits?.top_referrers ?? []).slice(0, 5).map(r => `${r.referrer_domain} - ${r.count}`);
+		// API values are untrusted: numbers must be finite, domains plain strings.
+		const num = v => (Number.isFinite(v) ? v : null);
+		const hearts = num(engagement?.total_hearts);
+		const feedback = num(engagement?.total_feedback);
+		const directCount = num(visits?.direct_entry_count);
+		const internalCount = num(visits?.internal_entry_count);
+		const referrers = (Array.isArray(visits?.top_referrers) ? visits.top_referrers : [])
+			.filter(r => typeof r?.referrer_domain === 'string' && Number.isFinite(r.count))
+			.slice(0, 5);
 		if (hearts == null && feedback == null && !referrers.length) {
 			card.remove();
 			return;
 		}
 
-		const row = (label, value) => value != null
-			? `<div class="rh-info-list__item"><p class="rh-info-list__label">${label}</p><p class="rh-info-list__value">${value}</p></div>`
-			: '';
+		const list = el('div', 'rh-info-list');
+		[['Hearts', hearts], ['Feedback', feedback], ['Direct Entries', directCount], ['Internal Entries', internalCount]]
+			.filter(([, value]) => value != null)
+			.forEach(([label, value]) => {
+				const item = el('div', 'rh-info-list__item');
+				item.append(el('p', 'rh-info-list__label', label), el('p', 'rh-info-list__value', String(value)));
+				list.append(item);
+			});
+		status.replaceWith(list);
 
-		card.innerHTML = `
-			<h2 class="rh-card__title">Stats</h2>
-			<div class="rh-info-list">
-				${row('Hearts', hearts)}${row('Feedback', feedback)}${row('Direct Entries', directCount)}${row('Internal Entries', internalCount)}
-			</div>
-			${referrers.length ? `<p class="rh-info-list__label" style="margin-top:16px;">Top Referrers</p><ul class="fa-ul" style="margin-top:6px;">${referrers.map(r => `<li class="mb-1">${r}</li>`).join('')}</ul>` : ''}
-		`;
+		if (referrers.length) {
+			const heading = el('p', 'rh-info-list__label', 'Top Referrers');
+			heading.style.marginTop = '16px';
+			const ul = el('ul', 'fa-ul');
+			ul.style.marginTop = '6px';
+			referrers.forEach(r => ul.append(el('li', 'mb-1', `${r.referrer_domain}: ${r.count}`)));
+			card.append(heading, ul);
+		}
 	}
 
 	// ---- Required Apps in place of the ad-free pitch ----
@@ -786,15 +688,19 @@
 		const scrollWrap = card.querySelector('.rh-pubgraph__scroll');
 		const weeks = scrollWrap?.querySelectorAll('.rh-pubgraph__week');
 		if (!weeks || weeks.length <= RECENT_WEEKS) return;
-		card.dataset.rhCondensed = 'true';
 
+		// Cells carry "N publishes on <date>" in data-label (older markup: title).
+		const cellText = cell => cell?.dataset.label || cell?.title || '';
 		const recentWeeks = Array.from(weeks).slice(-RECENT_WEEKS);
 		const weekData = recentWeeks.map(week => {
 			const cells = Array.from(week.querySelectorAll('.rh-pubgraph__cell'));
-			const total = cells.reduce((sum, cell) => sum + (parseInt(cell.title, 10) || 0), 0);
-			const startDate = cells[0]?.title.match(/on (.+)$/)?.[1] ?? '';
+			const total = cells.reduce((sum, cell) => sum + (parseInt(cellText(cell), 10) || 0), 0);
+			const startDate = cellText(cells[0]).match(/on (.+)$/)?.[1] ?? '';
 			return { total, startDate };
 		});
+		// Unknown markup: keep the native chart rather than show empty bars.
+		if (!weekData.some(w => w.startDate)) return;
+		card.dataset.rhCondensed = 'true';
 		const maxTotal = Math.max(1, ...weekData.map(w => w.total));
 		const labelEvery = Math.ceil(weekData.length / 4);
 
@@ -956,8 +862,6 @@
 	}
 
 	addChangelogButton();
-	keepNavbarThemedDuringSearch();
-	debugNavbarSearchIssue();
 	addHeroMetadata();
 	promoteCreatorLine();
 	promoteRequiredApps();
