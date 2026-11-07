@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
-// @version      1.0.0-alpha27
+// @version      1.0.0-alpha32
 // @license      MIT
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
@@ -171,6 +171,49 @@
 .rh-browse-backdrop {
 	background: rgba(12, 19, 17, 0.35) !important;
 }
+/* Search popup floats with a gap below the search bar and from the screen edges. */
+.rh-browse {
+	padding: 8px 10px 10px !important;
+}
+/* Phone layout: compact pills and rows. Pills only until a category is picked
+   or a query is typed (.rhe-pills-only, set by quietSearchBrowse). */
+@media (max-width: 1023px) {
+	.rh-browse.rhe-pills-only .rh-browse__items { display: none !important; }
+	.rh-browse.rhe-pills-only .rh-browse__sections { border-bottom: 0 !important; }
+	/* Edge fades on the pill row, only toward sides that can still scroll. */
+	.rh-browse__sections.rhe-fade-r {
+		-webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+		mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+	}
+	.rh-browse__sections.rhe-fade-l {
+		-webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent);
+		mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent);
+	}
+	.rh-browse__sections.rhe-fade-l.rhe-fade-r {
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+		mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+	}
+	/* Same for the list, vertically. */
+	.rh-browse__items.rhe-fade-b {
+		-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+		mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+	}
+	.rh-browse__items.rhe-fade-t {
+		-webkit-mask-image: linear-gradient(to top, #000 calc(100% - 40px), transparent);
+		mask-image: linear-gradient(to top, #000 calc(100% - 40px), transparent);
+	}
+	.rh-browse__items.rhe-fade-t.rhe-fade-b {
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+		mask-image: linear-gradient(to bottom, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+	}
+	.rh-browse__sections { padding: 8px 10px !important; gap: 6px !important; }
+	.rh-browse__section { padding: 4px 11px !important; font-size: 13px !important; gap: 6px !important; }
+	.rh-browse__section i { font-size: 12px !important; }
+	.rh-browse__items { padding: 4px 0 !important; }
+	.rh-browse__title { padding: 6px 14px 4px !important; font-size: 10px !important; }
+	.rh-browse__row { padding: 9px 14px !important; font-size: 15px !important; gap: 10px !important; }
+	.rh-browse__row i.rh-browse__icon { width: 18px !important; font-size: 14px !important; }
+}
 .footer a, .navbar a, .navbar-item, .dropdown-menu a, .search-button__label {
 	color: var(--rhe-accent) !important;
 }
@@ -180,6 +223,14 @@
    so unconditional rather than dark-mode-gated. */
 .search {
 	background-color: var(--rhe-surface-2) !important;
+}
+/* Overlay instead of page flow: absolute without top keeps its spot under the
+   navbar but stops pushing the page down. */
+.search {
+	position: absolute !important;
+	left: 0;
+	right: 0;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
 .button.is-dark {
 	background-color: var(--rhe-surface-2) !important;
@@ -398,6 +449,69 @@
 	.rh-scroll--stats {
 		background: var(--rhe-surface-1) !important;
 		border-color: var(--rhe-border) !important;
+	}
+	/* Search browse panel: flat suggestion list (YouTube mobile style), category pills on top. */
+	.rh-browse__card {
+		background: var(--rhe-bg) !important;
+		color: var(--rhe-text) !important;
+		border: 1px solid var(--rhe-border) !important;
+		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+	}
+	.rh-browse__sections, .rh-browse__hints {
+		background: var(--rhe-bg) !important;
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-browse__section {
+		background: var(--rhe-surface-2) !important;
+		color: var(--rhe-text) !important;
+		border-radius: 999px !important;
+		font-weight: 500 !important;
+	}
+	.rh-browse__section:hover, .rh-browse__section:focus-visible {
+		background: var(--rhe-surface-1) !important;
+		color: var(--rhe-accent) !important;
+	}
+	.rh-browse__section.is-active {
+		background: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
+		font-weight: 600 !important;
+	}
+	.rh-browse__section i, .rh-browse__section.is-active i {
+		color: inherit !important;
+	}
+	.rh-browse__title {
+		color: rgba(203, 217, 215, 0.55) !important;
+	}
+	.rh-browse__title--results {
+		color: var(--rhe-accent) !important;
+	}
+	.rh-browse__title--results ~ .rh-browse__title {
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-browse__row {
+		color: var(--rhe-text) !important;
+		font-weight: 400 !important;
+		border-radius: 0 !important;
+	}
+	.rh-browse__row.is-active, .rh-browse__row:hover {
+		background: var(--rhe-surface-1) !important;
+		color: var(--rhe-text) !important;
+	}
+	.rh-browse__row i.rh-browse__icon {
+		color: rgba(203, 217, 215, 0.65) !important;
+	}
+	.rh-browse__row--result {
+		font-weight: 500 !important;
+	}
+	.rh-browse__row--search, .rh-browse__row--search i.rh-browse__icon {
+		color: var(--rhe-accent) !important;
+	}
+	.rh-browse__row--muted, .rh-browse__row--muted:hover, .rh-browse__row--locked {
+		background: transparent !important;
+		color: rgba(203, 217, 215, 0.55) !important;
+	}
+	.rh-browse__chevron, .rh-browse__lock, .rh-browse__kind {
+		color: rgba(203, 217, 215, 0.45) !important;
 	}
 	/* Native dark stage and contact circles are plum. */
 	.rh-pubgraph__stage {
@@ -758,6 +872,52 @@
 		scrollWrap.after(toggle);
 	}
 
+	// ---- Search popup: search first, browse on demand ----
+	// Empty field on "All" shows pills only; the site would repeat them as rows.
+	// A picked category or a typed query shows the list, capped above the keyboard.
+	function quietSearchBrowse() {
+		const root = document.getElementById('rh-browse');
+		if (!root || root.dataset.rheQuiet) return;
+		root.dataset.rheQuiet = 'true';
+		const input = document.querySelector('.search #id_q');
+
+		const fade = () => {
+			const row = root.querySelector('.rh-browse__sections');
+			if (row) {
+				const max = row.scrollWidth - row.clientWidth;
+				row.classList.toggle('rhe-fade-l', row.scrollLeft > 2);
+				row.classList.toggle('rhe-fade-r', row.scrollLeft < max - 2);
+			}
+			const list = root.querySelector('.rh-browse__items');
+			if (list) {
+				const max = list.scrollHeight - list.clientHeight;
+				list.classList.toggle('rhe-fade-t', list.scrollTop > 2);
+				list.classList.toggle('rhe-fade-b', list.scrollTop < max - 2);
+			}
+		};
+		// scroll does not bubble; capture catches the re-rendered pill row too.
+		root.addEventListener('scroll', fade, { capture: true, passive: true });
+
+		const update = () => {
+			fade();
+			const active = root.querySelector('.rh-browse__section.is-active')?.dataset.key;
+			const empty = !(input?.value || '').trim();
+			root.classList.toggle('rhe-pills-only', empty && (!active || active === 'all'));
+			const items = root.querySelector('.rh-browse__items');
+			const vv = window.visualViewport;
+			if (!items || !vv || root.classList.contains('rhe-pills-only')) return;
+			const room = vv.offsetTop + vv.height - items.getBoundingClientRect().top - 12;
+			items.style.setProperty('max-height', `${Math.max(140, Math.round(room))}px`, 'important');
+			fade();
+		};
+		// Style writes are not observed, so update cannot retrigger itself.
+		new MutationObserver(update).observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+		input?.addEventListener('input', update);
+		window.visualViewport?.addEventListener('resize', update);
+		window.visualViewport?.addEventListener('scroll', update);
+		update();
+	}
+
 	// ---- Profile: drop the redundant "Free" badge from the Authored grid ----
 	// Every authored shortcut is free (paid shortcuts aren't a thing here yet),
 	// so the badge is pure repetition on every single card. Scoped to the
@@ -881,6 +1041,7 @@
 	splitStatsOverview();
 	condensePublishActivity();
 	cleanAuthoredGrid();
+	quietSearchBrowse();
 	refreshComments();
 
 	// Archived comments (and the changelog card) can load in after an AJAX call,
