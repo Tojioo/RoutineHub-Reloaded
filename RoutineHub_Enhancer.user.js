@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
-// @version      1.0.0-alpha25
+// @version      1.0.0-alpha27
 // @license      MIT
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
@@ -38,83 +38,64 @@
 .shortcut article.media { padding: .5rem 0 0 0 !important; }
 .rh-creator-line { display: block; margin-bottom: 0.4em; }
 @media (max-width: 600px) {
-	.rh-scroll--stats .rh-stat { padding: 10px 6px !important; min-width: 74px !important; }
-	.rh-scroll--stats .rh-stat__value { font-size: 1.35rem !important; }
 	.rh-pubgraph__chart { transform: scale(0.9); transform-origin: top left; }
 }
-/* .rh-scroll--stats is the site's horizontal-carousel component (flex row,
-   scroll-snap, fixed-width .rh-stat children via ">" combinator) -- the same
-   pattern used for the Trending Coders dev card strip. Overridden to wrap
-   onto multiple rows instead of scrolling, per explicit request; "flex"
-   on .rh-stat itself needs no override since grid layout ignores flex-*
-   properties on its items. The carousel pattern elsewhere on the site is
-   left alone -- this is scoped to the stats row specifically. */
+/* Author Overview as one card: primary stats in 3 columns with dividers.
+   .rh-scroll--stats is the site's carousel; grid stops the scrolling. */
 .rh-scroll--stats {
 	display: grid !important;
 	grid-template-columns: repeat(3, 1fr) !important;
 	overflow: visible !important;
-	gap: 10px;
-	margin-bottom: 10px !important;
+	gap: 0 !important;
+	padding: 14px 0 !important;
+	margin-bottom: 8px !important;
+	border-radius: 14px;
+	background: #fff;
+	border: 1px solid #f0f0f0;
 }
-/* Secondary stat group (everything besides Followers/Following/Downloads),
-   built by splitStatsOverview() and hidden until the toggle button below is
-   pressed -- same condense-and-reveal shape as Publish Activity's toggle.
-   Its own full grid declaration, not shared with .rh-scroll--stats: that
-   class's "display: grid !important" would otherwise beat the toggle's
-   plain (non-!important) inline "display: none" every time. All 4 fit on one
-   row. Labels are visually hidden here (not deleted -- see below), so the
-   icon carries the meaning alone; freed-up vertical space goes to a larger
-   icon and value instead of keeping everything shrunk. */
+.rh-scroll--stats > .rh-stat, .rh-stats-secondary > .rh-stat {
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	min-width: 0 !important;
+	transform: none !important;
+}
+.rh-scroll--stats > .rh-stat {
+	padding: 2px 6px !important;
+	gap: 2px !important;
+}
+.rh-scroll--stats > .rh-stat + .rh-stat {
+	border-left: 1px solid rgba(127, 127, 127, 0.22) !important;
+}
+.rh-scroll--stats .rh-stat__icon { order: 1; font-size: 0.9rem; }
+.rh-scroll--stats .rh-stat__value { order: 2; font-size: 1.4rem !important; }
+.rh-scroll--stats .rh-stat__label, .rh-stats-secondary .rh-stat__label {
+	order: 3;
+	margin: 0 !important;
+	font-size: 0.75rem !important;
+	font-weight: 600 !important;
+	text-transform: none !important;
+	letter-spacing: normal !important;
+}
+/* Secondary stats: compact icon, value and label chips. Own display value,
+   so the toggle's inline display:none still wins. */
 .rh-stats-secondary {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 6px;
-	margin-top: 10px;
-	margin-bottom: 20px !important;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px 16px;
+	margin: 2px 0 12px;
 }
-.rh-stats-secondary .rh-stat {
-	padding: 10px 4px !important;
-	border-radius: 8px;
-	position: relative;
+.rh-stats-secondary > .rh-stat {
+	flex-direction: row !important;
+	align-items: baseline !important;
+	gap: 5px !important;
+	padding: 2px 0 !important;
 }
-.rh-stats-secondary .rh-stat__icon {
-	font-size: 1.3rem !important;
-	margin-bottom: 0;
-}
-.rh-stats-secondary .rh-stat__value {
-	font-size: 1.2rem !important;
-}
-/* Visually hidden, not display:none or removed -- a screen reader still
-   gets "0 Skills", not just "0" with no context. Icon meaning is
-   established consistently on the "New" page (bolt = Shortcut, terminal =
-   Prompt, scroll = Skill, puzzle = Plugin -- addStatIcons() below uses the
-   same glyphs), which is what makes dropping the visible caption here
-   reasonable rather than just saving space at the cost of clarity. */
-.rh-stats-secondary .rh-stat__label {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
-}
-/* Bulma's own .button rules apparently tie or beat this on specificity --
-   margin-bottom was silently dropped (button sat flush against the next
-   card). !important forces it regardless of the exact competing rule. */
+.rh-stats-secondary .rh-stat__icon { order: 1; font-size: 0.8rem; }
+.rh-stats-secondary .rh-stat__value { order: 2; font-size: 0.95rem !important; font-weight: 700; }
 .rh-stats-toggle { margin-bottom: 20px !important; }
-.rh-stat { border-radius: 10px; padding: 14px 10px !important; }
-/* Icon is a sibling of .rh-stat__label/__value (inserted as .rh-stat's first
-   child by addStatIcons(), not nested inside the label) so flex "order" can
-   put it on its own row above the value -- icon/value/label stacked, instead
-   of an icon crammed inline before the label text. Smaller and in the accent
-   color rather than a dimmed neutral: at 1.4rem/45%-opacity it read as too
-   large and too washed out to actually register as an icon. */
-.rh-stat__icon { order: 1; font-size: 1rem; margin-bottom: 2px; }
-.rh-stat__value { order: 2; }
-.rh-stat__label { order: 3; font-size: 0.72rem; }
 /* Condensed Publish Activity preview: a weekly bar chart, not a shrunk clone
    of the heatmap. A 13-cluster of tiny colored squares needing a month label
    above and a day label to the left to decode is exactly what made the full
@@ -127,6 +108,10 @@
 .rh-pubgraph__minibar-labels { display: flex; gap: 3px; margin-top: 4px; }
 .rh-pubgraph__minibar-labels span { flex: 1 1 0; max-width: 24px; font-size: 10px; text-align: center; white-space: nowrap; overflow: visible; }
 .rh-pubgraph-toggle { margin-top: 0.75em; }
+/* Native heatmap levels are plum (#61124b, dark: #eb9796). Use the accent, keep the opacity ramp. */
+.rh-pubgraph__cell--l1, .rh-pubgraph__cell--l2, .rh-pubgraph__cell--l3, .rh-pubgraph__cell--l4 {
+	background: var(--rhe-accent) !important;
+}
 `);
 	document.querySelectorAll('.rh-topcard-action, .rh-listrow-action').forEach(a => a.remove());
 	if (window.location.pathname === '/') {
@@ -264,10 +249,10 @@
 	.rh-stat__icon {
 		color: var(--rhe-accent) !important;
 	}
-	.rh-topcard, .shortcut .description .content blockquote, code, pre, .field-new-control, .rh-cta--secondary, blockquote, .rh-feed-post, .textarea, .rh-stat, .rh-pubgraph__cell--l0, .rh-feed-composer__submit {
+	.rh-topcard, .shortcut .description .content blockquote, code, pre, .field-new-control, .rh-cta--secondary, blockquote, .rh-feed-post, .textarea, .rh-pubgraph__cell--l0, .rh-feed-composer__submit {
 		background-color: var(--rhe-surface-2) !important;
 	}
-	.card, .rh-card, .rh-hero-header, .box, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-feed-post, .rh-proof-bar, .rh-stat, .rh-feed-interstitial {
+	.card, .rh-card, .rh-hero-header, .box, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-feed-post, .rh-proof-bar, .rh-feed-interstitial {
 		box-shadow: 0 .5em 1em -.125em var(--rhe-accent-dim), 0 0 0 1px rgba(0, 219, 172, 0.05) !important;
 	}
 	/* Light fields: set text and background together. */
@@ -285,7 +270,7 @@
 	.rh-notification--unread {
 		background: var(--rhe-accent-dim) !important;
 	}
-	.rh-listrow, .rh-card, .rh-hero-header, .card, .box, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-feed-post, .rh-proof-bar, .rh-stat, .rh-feed-interstitial {
+	.rh-listrow, .rh-card, .rh-hero-header, .card, .box, .rh-tagline, .rh-checkin, .rh-feed-composer, .rh-devcard, .rh-feed-login-cta, .rh-feed-post, .rh-proof-bar, .rh-feed-interstitial {
 		border: 1px solid var(--rhe-border) !important;
 	}
 	.textarea::placeholder, .rh-feed-composer__textarea::placeholder {
@@ -409,6 +394,22 @@
 	}
 	.rh-rail__tree::before, .rh-rail__treelink::before {
 		background: var(--rhe-border) !important;
+	}
+	.rh-scroll--stats {
+		background: var(--rhe-surface-1) !important;
+		border-color: var(--rhe-border) !important;
+	}
+	/* Native dark stage and contact circles are plum. */
+	.rh-pubgraph__stage {
+		background: var(--rhe-surface-1) !important;
+	}
+	.rh-social-icon {
+		background: var(--rhe-surface-2) !important;
+		color: var(--rhe-accent) !important;
+	}
+	.rh-social-icon:hover {
+		background: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
 	}
 	.rh-rail__group, .rh-rail__foot, .rh-rail__bottom {
 		border-top: 1px solid var(--rhe-border) !important;
@@ -605,14 +606,20 @@
 	// site -- deliberate, not incidental, since splitStatsOverview() below
 	// relies on these being recognizable without a visible label.
 	function addStatIcons() {
+		// Stat label (exact site text) -> Font Awesome 5 solid class.
+		// Live labels: Followers, Following, Downloads, Shortcuts, Skills, Prompts,
+		// Agents, Plugins, Favorites (only on some profiles).
+		// Content types reuse the "Create new" page glyphs. Unmapped labels get no icon.
 		const icons = {
 			Followers: 'fa-user-friends',
-			Following: 'fa-user-plus',
+			Following: 'fa-user-check',
+			Downloads: 'fa-download',
 			Shortcuts: 'fa-bolt',
 			Skills: 'fa-scroll',
 			Prompts: 'fa-terminal',
+			Agents: 'fa-robot',
 			Plugins: 'fa-puzzle-piece',
-			Downloads: 'fa-download',
+			Favorites: 'fa-heart',
 		};
 		document.querySelectorAll('.rh-scroll--stats .rh-stat').forEach(stat => {
 			if (stat.querySelector(':scope > .rh-stat__icon')) return;
@@ -728,6 +735,9 @@
 
 		scrollWrap.before(mini);
 		scrollWrap.style.display = 'none';
+		// Tap hint and Less/More legend describe the heatmap only.
+		const foot = card.querySelector('.rh-pubgraph__foot');
+		if (foot) foot.style.display = 'none';
 
 		const toggle = document.createElement('button');
 		toggle.type = 'button';
@@ -736,6 +746,7 @@
 		toggle.addEventListener('click', () => {
 			const expanding = toggle.textContent === 'Show full year';
 			scrollWrap.style.display = expanding ? '' : 'none';
+			if (foot) foot.style.display = expanding ? '' : 'none';
 			mini.style.display = expanding ? 'none' : '';
 			toggle.textContent = expanding ? 'Show less' : 'Show full year';
 		});
