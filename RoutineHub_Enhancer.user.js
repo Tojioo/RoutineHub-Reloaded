@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
-// @version      1.0.0-alpha32
+// @version      1.0.0-alpha40
 // @license      MIT
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
@@ -214,6 +214,165 @@
 	.rh-browse__row { padding: 9px 14px !important; font-size: 15px !important; gap: 10px !important; }
 	.rh-browse__row i.rh-browse__icon { width: 18px !important; font-size: 14px !important; }
 }
+/* Notifications: one card with divided compact rows (enhanceNotifications). */
+.notifications .rh-feed-timeline {
+	background: #fff;
+	border: 1px solid #f0f0f0;
+	border-radius: 14px;
+	overflow: clip;
+	padding: 0 0 2px;
+	/* Site gap showed as a strip above each section band. Rows space themselves. */
+	gap: 0 !important;
+}
+/* Server day headers (NEW, TODAY, repeated per "load more" page) replaced by
+   .rhe-daygroup, computed from timestamps and shown once each. */
+.notifications .rh-feed-timeline > .rh-feed-daygroup { display: none !important; }
+/* Shapes: controls are pills, the card is rounded, everything inside it is square.
+   Section headers: a sticky band per day section, tap to collapse. */
+.rhe-daygroup {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	margin: 0 !important;
+	padding: 0 !important;
+	background: #f4f5f7;
+	border-bottom: 1px solid rgba(127, 127, 127, 0.15);
+	color: #8a93a3;
+}
+.rhe-daygroup__toggle {
+	-webkit-appearance: none !important;
+	appearance: none !important;
+	display: flex !important;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	margin: 0 !important;
+	padding: 9px 14px !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	color: inherit !important;
+	font: inherit !important;
+	cursor: pointer;
+	text-align: left;
+}
+.rhe-daygroup__label {
+	flex: 1 1 auto;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+.rhe-daygroup__count { font-size: 0.72rem; font-weight: 600; opacity: 0.8; }
+.rhe-daygroup__chev { font-size: 0.7rem; transition: transform 0.15s; }
+.rhe-daygroup.is-collapsed .rhe-daygroup__chev { transform: rotate(-90deg); }
+.rhe-section-hidden { display: none !important; }
+.notifications .rh-notification {
+	margin: 0 !important;
+	padding: 12px 14px !important;
+	border: 0 !important;
+	border-bottom: 1px solid rgba(127, 127, 127, 0.15) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	background: transparent !important;
+}
+.notifications .rh-notification__avatar img,
+.notifications .rh-notification__avatar .rh-feed-post__avatar-fallback {
+	width: 32px !important;
+	height: 32px !important;
+}
+.notifications .rh-feed-post__byline {
+	display: grid !important;
+	grid-template-columns: 1fr auto;
+	column-gap: 8px;
+	align-items: baseline;
+}
+.notifications .rh-notification__meta {
+	display: flex !important;
+	align-items: center;
+	gap: 6px;
+	white-space: nowrap;
+	font-size: 0.75rem;
+}
+.notifications .rh-notification__preview { margin: 3px 0 0 42px !important; }
+.notifications .rh-notification__quote {
+	-webkit-line-clamp: 1 !important;
+	white-space: normal !important;
+	padding: 0 0 0 8px !important;
+	font-size: 0.82rem !important;
+	background: transparent !important;
+}
+.notifications .rhe-thread-linked .rh-notification__actions { display: none !important; }
+.rhe-quote-link { display: block; text-decoration: none !important; color: inherit !important; }
+/* Bursts from one account collapse into a group row. */
+.rhe-notif-group { border-bottom: 1px solid rgba(127, 127, 127, 0.15); }
+/* Reset native button looks so the head reads as a row like the others. */
+.rhe-notif-group__head {
+	-webkit-appearance: none !important;
+	appearance: none !important;
+	display: flex !important;
+	align-items: center;
+	gap: 10px;
+	width: 100% !important;
+	height: auto !important;
+	margin: 0 !important;
+	padding: 12px 14px !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	font: inherit !important;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+.rhe-notif-group.is-open .rhe-notif-group__body { background: rgba(127, 127, 127, 0.06); }
+.rhe-notif-filter { align-items: center; }
+.rhe-notif-filter .read-all { margin-left: auto; }
+.rhe-notif-group__avatar { position: relative; flex: 0 0 32px; }
+.rhe-notif-group__avatar img { width: 32px; height: 32px; border-radius: 50%; display: block; }
+.rhe-notif-group__text { flex: 1 1 auto; min-width: 0; font-size: 0.92rem; line-height: 1.4; }
+.rhe-notif-group__meta { display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 0.75rem; }
+/* !important: iOS managers inject this sheet as user origin, where the site's
+   display:inline-block on the dot wins over any normal declaration. */
+.rhe-notif-group:not(.is-unread) .rhe-notif-group__dot { display: none !important; }
+/* Unread dot in the navbar counter red, so it reads as "new", not as accent. */
+.notifications .rh-notification__dot { width: 8px !important; height: 8px !important; background: #f65052 !important; }
+.rhe-notif-group__chev { transition: transform 0.15s; }
+.rhe-notif-group.is-open .rhe-notif-group__chev { transform: rotate(180deg); }
+.rhe-notif-group__body { display: none; }
+.rhe-notif-group.is-open .rhe-notif-group__body { display: block; }
+.notifications .rhe-notif-group__body .rh-notification { padding-left: 56px !important; }
+.rhe-notif-group__body .rh-notification__avatar, .rhe-notif-group__body .rh-notification__actor { display: none !important; }
+.notifications .rhe-notif-group__body .rh-notification__preview { margin-left: 0 !important; }
+.notifications .rhe-notif-group__body .rh-notification:last-child { border-bottom: 0 !important; }
+/* Yours / Following filter. */
+.rhe-notif-filter { display: flex; gap: 8px; margin: 0 0 10px; }
+.rhe-notif-filter .rh-feed-tab { padding: 6px 14px !important; font-size: 0.85rem !important; border: 0; cursor: pointer; }
+/* Settings: round icon button at pill height. The gear inherits the button
+   background, so it cuts a ring out of the bell in every state. */
+.notifications .rhe-notif-settings {
+	position: relative !important;
+	width: 34px !important;
+	height: 34px !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 50% !important;
+	font-size: 0.95rem !important;
+	text-decoration: none !important;
+}
+.rhe-notif-settings__gear {
+	position: absolute;
+	right: 6px;
+	bottom: 6px;
+	padding: 1.5px;
+	border-radius: 50%;
+	background-color: inherit !important;
+	font-size: 0.55rem !important;
+	line-height: 1 !important;
+}
+.rh-feed-timeline[data-rhe-filter=own] .rhe-following,
+.rh-feed-timeline[data-rhe-filter=following] .rhe-own { display: none !important; }
 .footer a, .navbar a, .navbar-item, .dropdown-menu a, .search-button__label {
 	color: var(--rhe-accent) !important;
 }
@@ -512,6 +671,77 @@
 	}
 	.rh-browse__chevron, .rh-browse__lock, .rh-browse__kind {
 		color: rgba(203, 217, 215, 0.45) !important;
+	}
+	/* Feed tabs and notification buttons ("Mark all as read", "Adjust notifications"). */
+	.rh-feed-tab {
+		background: var(--rhe-surface-2) !important;
+		color: var(--rhe-text) !important;
+	}
+	.rh-feed-tab:hover {
+		background: var(--rhe-surface-1) !important;
+		color: var(--rhe-accent) !important;
+	}
+	.rh-feed-tab.is-active {
+		background: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
+	}
+	/* Notifications: native blue to teal, cards flattened into one list card. */
+	.rh-feed-daygroup, .rhe-daygroup {
+		color: rgba(203, 217, 215, 0.55) !important;
+		border-bottom-color: var(--rhe-border) !important;
+	}
+	.rh-feed-daygroup--new {
+		color: var(--rhe-accent) !important;
+		border-bottom-color: rgba(0, 219, 172, 0.25) !important;
+	}
+	.rh-feed-daygroup--new::before {
+		background: var(--rhe-accent) !important;
+	}
+	.rh-notification__badge {
+		border-color: var(--rhe-surface-1) !important;
+	}
+	.rh-notification__badge--feedback {
+		background: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
+	}
+	.rh-feed-spinner {
+		border-color: var(--rhe-border) !important;
+		border-top-color: var(--rhe-accent) !important;
+	}
+	.notifications .rh-feed-timeline {
+		background: var(--rhe-surface-1) !important;
+		border-color: var(--rhe-border) !important;
+	}
+	.notifications .rh-notification, .rhe-notif-group {
+		background: transparent !important;
+		border: 0 !important;
+		border-bottom: 1px solid var(--rhe-border) !important;
+		box-shadow: none !important;
+	}
+	.rhe-daygroup {
+		background: #0f1c1a !important;
+		border-bottom-color: var(--rhe-border) !important;
+	}
+	/* Unread is the dot alone; nearly everything is unread, so tints and bars were noise. */
+	.rhe-notif-group.is-open .rhe-notif-group__body {
+		background: var(--rhe-bg) !important;
+	}
+	.rh-notification__text, .rhe-notif-group__text {
+		color: rgba(203, 217, 215, 0.65) !important;
+	}
+	.rh-notification__actor {
+		color: var(--rhe-text) !important;
+	}
+	.rh-notification__obj {
+		color: var(--rhe-accent) !important;
+	}
+	.rh-notification__quote {
+		color: rgba(203, 217, 215, 0.75) !important;
+		border-left-color: var(--rhe-border) !important;
+		background: transparent !important;
+	}
+	.notifications .rh-feed-post__time, .rhe-notif-group__meta {
+		color: rgba(203, 217, 215, 0.55) !important;
 	}
 	/* Native dark stage and contact circles are plum. */
 	.rh-pubgraph__stage {
@@ -872,6 +1102,351 @@
 		scrollWrap.after(toggle);
 	}
 
+	// ---- Notifications: compact rows, yours vs following, burst groups ----
+	// Paths of the signed-in user's own items, from their profile. Cached 12 h.
+	async function loadOwnItems() {
+		const me = document.querySelector('.rh-rail a[href^="/user/"]')?.getAttribute('href');
+		if (!me) return null;
+		const KEY = 'rhe-own-items';
+		try {
+			const cached = JSON.parse(localStorage.getItem(KEY) || 'null');
+			if (cached?.user === me && Date.now() - cached.at < 12 * 3600e3) return new Set(cached.items);
+		} catch {}
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 8000);
+		try {
+			const res = await fetch(me, { credentials: 'same-origin', signal: controller.signal });
+			if (!res.ok) return null;
+			const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+			const items = new Set();
+			doc.querySelectorAll('.rh-section-title').forEach(title => {
+				// Skip sections listing other people's items.
+				if (/favou?rite|like|follow/i.test(title.textContent)) return;
+				title.nextElementSibling?.querySelectorAll('a[href]').forEach(a => {
+					const path = a.getAttribute('href');
+					if (/^\/(shortcut|skill|prompt|plugin|agent|model|cherri)\/[^/?#]+\/?$/.test(path)) {
+						items.add(path.endsWith('/') ? path : `${path}/`);
+					}
+				});
+			});
+			try { localStorage.setItem(KEY, JSON.stringify({ user: me, at: Date.now(), items: [...items] })); } catch {}
+			return items;
+		} catch {
+			return null;
+		} finally {
+			clearTimeout(timeout);
+		}
+	}
+
+	async function enhanceNotifications() {
+		const timeline = document.querySelector('.notifications .rh-feed-timeline');
+		if (!timeline || timeline.dataset.rheNotif) return;
+		timeline.dataset.rheNotif = 'true';
+		const own = await loadOwnItems();
+
+		const UNITS = { minute: 'm', hour: 'h', day: 'd', week: 'w', month: 'mo', year: 'y' };
+		const objPath = n => n.querySelector('.rh-notification__obj')?.getAttribute('href') ?? '';
+		const actorOf = n => n.querySelector('.rh-notification__actor')?.getAttribute('href') ?? '';
+		const timeOf = n => Date.parse(n.querySelector('time')?.getAttribute('datetime') ?? '') || 0;
+		// Phrase between the actor and the first object link: "commented on", "updated",
+		// "replied to you on". Empty for notifications without an actor (streaks, milestones).
+		const verbOf = n => {
+			const actor = n.querySelector('.rh-notification__text .rh-notification__actor');
+			if (!actor) return '';
+			let verb = '';
+			for (let node = actor.nextSibling; node && !(node.nodeType === 1 && node.matches('a')); node = node.nextSibling) {
+				verb += node.textContent;
+			}
+			return verb.replace(/\s+/g, ' ').trim();
+		};
+
+		// B: short time in the title row, quote as the one-line link to the thread.
+		const compact = n => {
+			if (n.dataset.rheCompact) return;
+			n.dataset.rheCompact = 'true';
+			const time = n.querySelector('.rh-feed-post__time');
+			// "1 day, 2 hours ago": the first, largest unit is the age.
+			const m = time?.textContent.match(/(\d+)\s*(minute|hour|day|week|month|year)s?/);
+			if (m) {
+				time.title = time.textContent.trim();
+				time.textContent = m[1] + UNITS[m[2]];
+			}
+			const stat = n.querySelector('.rh-notification__stat');
+			const quote = n.querySelector('.rh-notification__quote');
+			if (stat && quote) {
+				const link = document.createElement('a');
+				link.className = 'rhe-quote-link';
+				link.href = stat.getAttribute('href');
+				quote.replaceWith(link);
+				link.append(quote);
+				n.classList.add('rhe-thread-linked');
+			}
+			if (own) n.classList.add(own.has(objPath(n)) ? 'rhe-own' : 'rhe-following');
+		};
+
+		const syncUnread = g => g.classList.toggle('is-unread', !!g.querySelector('.rh-notification--unread'));
+
+		// Day sections from timestamps, so they match what the rows say.
+		const DAY = 864e5;
+		const bucketOf = t => {
+			const now = new Date();
+			const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+			if (t >= today) return 'Today';
+			if (t >= today - DAY) return 'Yesterday';
+			if (t >= today - 6 * DAY) return 'This week';
+			if (t >= today - 29 * DAY) return 'This month';
+			return 'Older';
+		};
+		const timeOfEntry = el => el.matches('.rhe-notif-group')
+			? timeOf(el.querySelector('.rh-notification'))
+			: el.matches('article.rh-notification') ? timeOf(el) : null;
+		const isHeader = el => el.matches('.rh-feed-daygroup, .rhe-daygroup');
+
+		// C: everything one account did the same way within one day section, 2+ items.
+		// Not limited to neighbours, and later pages ("load more") join existing groups.
+		const keyOf = n => `${bucketOf(timeOf(n))}|${actorOf(n)}|${verbOf(n)}`;
+		const updateGroup = g => {
+			const members = [...g.querySelectorAll('.rhe-notif-group__body > article.rh-notification')];
+			const paths = members.map(objPath);
+			const noun = paths.every(p => p.startsWith('/shortcut/')) ? 'shortcuts'
+				: paths.every(p => p.startsWith('/user/')) ? 'people' : 'items';
+			const count = g.querySelector('.rhe-notif-group__count');
+			const label = ` ${verbOf(members[0])} ${members.length} ${noun}`;
+			if (count.textContent !== label) count.textContent = label;
+			syncUnread(g);
+		};
+		const buildGroup = (run, key) => {
+			const first = run[0];
+			const g = document.createElement('div');
+			g.className = own ? 'rhe-notif-group rhe-following' : 'rhe-notif-group';
+			g.dataset.key = key;
+			const head = document.createElement('button');
+			head.type = 'button';
+			head.className = 'rhe-notif-group__head';
+			head.setAttribute('aria-expanded', 'false');
+			const avatar = document.createElement('span');
+			avatar.className = 'rhe-notif-group__avatar';
+			first.querySelectorAll('.rh-notification__avatar > *').forEach(c => avatar.append(c.cloneNode(true)));
+			const text = document.createElement('span');
+			text.className = 'rhe-notif-group__text';
+			const name = document.createElement('span');
+			name.className = 'rh-notification__actor';
+			name.textContent = first.querySelector('.rh-notification__actor')?.textContent.trim() ?? '';
+			const count = document.createElement('span');
+			count.className = 'rhe-notif-group__count';
+			text.append(name, count);
+			const meta = document.createElement('span');
+			meta.className = 'rhe-notif-group__meta';
+			const dot = document.createElement('span');
+			dot.className = 'rh-notification__dot rhe-notif-group__dot';
+			const chev = icon('fa-chevron-down');
+			chev.classList.add('rhe-notif-group__chev');
+			meta.append(first.querySelector('.rh-feed-post__time')?.textContent ?? '', dot, chev);
+			head.append(avatar, text, meta);
+			const body = document.createElement('div');
+			body.className = 'rhe-notif-group__body';
+			first.before(g);
+			g.append(head, body);
+			body.append(...run);
+			head.addEventListener('click', () => {
+				head.setAttribute('aria-expanded', String(g.classList.toggle('is-open')));
+			});
+			updateGroup(g);
+			return g;
+		};
+
+		// Consecutive only, so the timeline order never changes. A group that ends the list keeps
+		// growing when the next page continues the run. Only person actions group ("commented on").
+		const groupable = el => el.matches('article.rh-notification')
+			&& !el.classList.contains('rhe-own') && /^[a-z]/i.test(verbOf(el));
+		const group = () => {
+			let current = null;
+			const flush = () => {
+				if (current && !current.group && current.items.length >= 2) buildGroup(current.items, current.key);
+				current = null;
+			};
+			for (const el of [...timeline.children]) {
+				if (isHeader(el)) continue;
+				if (el.matches('.rhe-notif-group')) {
+					flush();
+					current = { key: el.dataset.key, group: el, items: [] };
+					continue;
+				}
+				if (!groupable(el)) {
+					flush();
+					continue;
+				}
+				const key = keyOf(el);
+				if (current?.key !== key) {
+					flush();
+					current = { key, items: [] };
+				}
+				if (current.group) {
+					current.group.querySelector('.rhe-notif-group__body').append(el);
+					updateGroup(current.group);
+				} else {
+					current.items.push(el);
+				}
+			}
+			flush();
+		};
+
+		// The site loads the next page when [data-feed-loadmore] enters a 600px margin.
+		// Grouping can keep the page so short that it never leaves, so the loader stalls.
+		// Hiding it for two frames lets the IntersectionObserver see it enter again.
+		const loadMore = document.querySelector('.notifications [data-feed-loadmore]');
+		let nudging = false;
+		const nudgeLoadMore = () => {
+			if (!loadMore || loadMore.hidden || nudging) return;
+			// A collapsed last section would otherwise pull in every remaining page.
+			if ([...timeline.querySelectorAll('.rhe-daygroup')].pop()?.classList.contains('is-collapsed')) return;
+			if (loadMore.getBoundingClientRect().top > window.innerHeight + 600) return;
+			nudging = true;
+			loadMore.style.display = 'none';
+			requestAnimationFrame(() => requestAnimationFrame(() => {
+				loadMore.style.display = '';
+				nudging = false;
+			}));
+		};
+
+		// Collapsed sections, remembered per label.
+		const COLLAPSED_KEY = 'rhe-notif-collapsed';
+		let collapsed = new Set();
+		try { collapsed = new Set(JSON.parse(localStorage.getItem(COLLAPSED_KEY) || '[]')); } catch {}
+
+		const makeHeader = bucket => {
+			const h = document.createElement('h3');
+			h.className = 'rhe-daygroup';
+			h.dataset.bucket = bucket;
+			const toggle = document.createElement('button');
+			toggle.type = 'button';
+			toggle.className = 'rhe-daygroup__toggle';
+			const label = document.createElement('span');
+			label.className = 'rhe-daygroup__label';
+			label.textContent = bucket;
+			const count = document.createElement('span');
+			count.className = 'rhe-daygroup__count';
+			const chev = icon('fa-chevron-down');
+			chev.classList.add('rhe-daygroup__chev');
+			toggle.append(label, count, chev);
+			toggle.addEventListener('click', () => {
+				if (collapsed.has(bucket)) collapsed.delete(bucket);
+				else collapsed.add(bucket);
+				try { localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed])); } catch {}
+				sections();
+			});
+			h.append(toggle);
+			return h;
+		};
+
+		// One header per section. Only inserts or removes when something is off, so the observer settles.
+		const headers = () => {
+			let prevBucket = null;
+			for (const el of [...timeline.children]) {
+				if (isHeader(el)) continue;
+				const t = timeOfEntry(el);
+				if (t == null) continue;
+				const bucket = bucketOf(t);
+				let before = el.previousElementSibling;
+				while (before?.matches('.rh-feed-daygroup')) before = before.previousElementSibling;
+				const ours = before?.matches('.rhe-daygroup') ? before : null;
+				if (bucket !== prevBucket && ours?.dataset.bucket !== bucket) {
+					el.before(makeHeader(bucket));
+				} else if (bucket === prevBucket && ours) {
+					ours.remove();
+				}
+				prevBucket = bucket;
+			}
+			timeline.querySelectorAll('.rhe-daygroup').forEach(h => {
+				let next = h.nextElementSibling;
+				while (next?.matches('.rh-feed-daygroup')) next = next.nextElementSibling;
+				if (!next || isHeader(next)) h.remove();
+			});
+		};
+
+		// Item counts on headers, and hiding the rows of collapsed sections.
+		const sections = () => {
+			let header = null;
+			let count = 0;
+			const close = () => {
+				if (!header) return;
+				const label = String(count);
+				const el = header.querySelector('.rhe-daygroup__count');
+				if (el.textContent !== label) el.textContent = label;
+				const isCollapsed = collapsed.has(header.dataset.bucket);
+				header.classList.toggle('is-collapsed', isCollapsed);
+				const toggle = header.querySelector('.rhe-daygroup__toggle');
+				if (toggle.getAttribute('aria-expanded') !== String(!isCollapsed)) toggle.setAttribute('aria-expanded', String(!isCollapsed));
+			};
+			for (const el of [...timeline.children]) {
+				if (el.matches('.rh-feed-daygroup')) continue;
+				if (el.matches('.rhe-daygroup')) {
+					close();
+					header = el;
+					count = 0;
+					continue;
+				}
+				count += el.matches('.rhe-notif-group') ? el.querySelectorAll('article.rh-notification').length : 1;
+				el.classList.toggle('rhe-section-hidden', !!header && collapsed.has(header.dataset.bucket));
+			}
+			close();
+		};
+
+		// Settings link as a bell with a gear badge; the text pill outsized the title.
+		const settings = document.querySelector('.notifications .rh-section-header a[href*="settings"]');
+		if (settings) {
+			settings.classList.add('rhe-notif-settings');
+			settings.setAttribute('aria-label', 'Adjust notifications');
+			settings.title = 'Adjust notifications';
+			const gear = icon('fa-gear');
+			gear.classList.add('rhe-notif-settings__gear');
+			settings.replaceChildren(icon('fa-bell'), gear);
+		}
+
+		if (own) {
+			const bar = document.createElement('div');
+			bar.className = 'rhe-notif-filter';
+			bar.setAttribute('role', 'tablist');
+			const tabs = [['all', 'All'], ['own', 'Yours'], ['following', 'Following']].map(([key, label]) => {
+				const tab = document.createElement('button');
+				tab.type = 'button';
+				tab.className = 'rh-feed-tab';
+				tab.setAttribute('role', 'tab');
+				tab.textContent = label;
+				tab.addEventListener('click', () => setFilter(key));
+				bar.append(tab);
+				return [key, tab];
+			});
+			const setFilter = key => {
+				timeline.dataset.rheFilter = key;
+				tabs.forEach(([k, tab]) => {
+					tab.classList.toggle('is-active', k === key);
+					tab.setAttribute('aria-selected', String(k === key));
+				});
+				try { localStorage.setItem('rhe-notif-filter', key); } catch {}
+			};
+			let saved = 'all';
+			try { saved = localStorage.getItem('rhe-notif-filter') || 'all'; } catch {}
+			// One toolbar row: filter left, the site's own "Mark all as read" right (moved, handlers kept).
+			const readAll = document.querySelector('.notifications .read-all');
+			if (readAll) bar.append(readAll);
+			timeline.before(bar);
+			setFilter(saved);
+		}
+
+		// Re-runs for "load more" and read-state changes; every step is idempotent.
+		const refresh = () => {
+			timeline.querySelectorAll('article.rh-notification').forEach(compact);
+			group();
+			headers();
+			sections();
+			requestAnimationFrame(nudgeLoadMore);
+			timeline.querySelectorAll('.rhe-notif-group').forEach(syncUnread);
+		};
+		refresh();
+		new MutationObserver(refresh).observe(timeline, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+	}
+
 	// ---- Search popup: search first, browse on demand ----
 	// Empty field on "All" shows pills only; the site would repeat them as rows.
 	// A picked category or a typed query shows the list, capped above the keyboard.
@@ -1042,6 +1617,7 @@
 	condensePublishActivity();
 	cleanAuthoredGrid();
 	quietSearchBrowse();
+	enhanceNotifications();
 	refreshComments();
 
 	// Archived comments (and the changelog card) can load in after an AJAX call,
