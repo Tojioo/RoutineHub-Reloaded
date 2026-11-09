@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
-// @version      1.0.0-alpha46
+// @version      1.0.0-alpha48
 // @license      ANC-SA-1.0
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
@@ -168,6 +168,8 @@
 	--rhe-text: #CBD9D7;
 	--rhe-accent: #00DBAC;
 	--rhe-accent-dim: rgba(0, 219, 172, 0.12);
+	/* Accent for text on light backgrounds: the header petrol (10.9:1 on white). */
+	--rhe-accent-ink: var(--rhe-surface-2);
 	--rhe-input-bg: #C7D6D4;
 }
 .footer, .navbar, .navbar-menu, .navbar-dropdown, .dropdown-menu {
@@ -411,6 +413,15 @@
 .rh-settings .title + .subtitle { margin-top: -8px !important; }
 /* Recent checks sits flush under the inline Generate button. */
 .rh-settings .proof-key > .title.is-6 { margin-top: 24px !important; }
+/* Change email is a maroon link and the key warning crimson natively. */
+.rh-settings .email-change-entry a {
+	color: var(--rhe-accent-ink) !important;
+	text-decoration-color: rgba(29, 66, 74, 0.35) !important;
+}
+.rh-settings .api-key strong {
+	color: #353535 !important;
+	text-decoration-color: rgba(53, 53, 53, 0.3) !important;
+}
 .rhe-char-count {
 	margin-top: 4px !important;
 	text-align: right;
@@ -966,6 +977,15 @@
 	}
 	.rhe-char-count.is-near {
 		color: var(--rhe-text) !important;
+	}
+	/* Change email is salmon natively; the key warning has a pink underline. */
+	.rh-settings .email-change-entry a {
+		color: var(--rhe-accent) !important;
+		text-decoration-color: rgba(0, 219, 172, 0.35) !important;
+	}
+	.rh-settings .api-key strong {
+		color: var(--rhe-text) !important;
+		text-decoration-color: rgba(203, 217, 215, 0.35) !important;
 	}
 	/* Settings tabs: pills in the notification filter colors. */
 	.rh-settings .rh-settings-tabs li a {
