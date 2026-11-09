@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
-// @version      1.0.0-alpha41
+// @version      1.0.0-alpha46
 // @license      ANC-SA-1.0
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
@@ -386,6 +386,50 @@
 	height: 16.5px !important;
 	fill: currentColor !important;
 }
+/* Settings tabs as pills, like the notification filters. The row scrolls
+   sideways; fades (settingsTabs) mark the sides with more tabs. */
+.rh-settings .rh-settings-tabs {
+	margin: 4px 0 16px !important;
+	scrollbar-width: none;
+}
+.rh-settings-tabs::-webkit-scrollbar { display: none; }
+.rh-settings .rh-settings-tabs ul { border-bottom: 0 !important; gap: 8px !important; }
+.rh-settings .rh-settings-tabs li a {
+	margin: 0 !important;
+	padding: 6px 14px !important;
+	border: 0 !important;
+	border-radius: 999px !important;
+	background-color: #f4f4f6 !important;
+	color: #555 !important;
+	font-size: 0.85rem !important;
+	font-weight: 600 !important;
+	white-space: nowrap;
+}
+.rh-settings .rh-settings-tabs li.is-active a { background-color: #1a1a1a !important; color: #fff !important; }
+.rh-settings .rh-settings-tabs .icon:first-child { margin-right: 0.35em !important; }
+/* Bulma pulls a subtitle up 1.25rem, onto the Social Links title. */
+.rh-settings .title + .subtitle { margin-top: -8px !important; }
+/* Recent checks sits flush under the inline Generate button. */
+.rh-settings .proof-key > .title.is-6 { margin-top: 24px !important; }
+.rhe-char-count {
+	margin-top: 4px !important;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	color: #888 !important;
+}
+.rhe-char-count.is-near { color: #1a1a1a !important; font-weight: 600; }
+.rh-settings-tabs.rhe-fade-r {
+	-webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+	mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+.rh-settings-tabs.rhe-fade-l {
+	-webkit-mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent);
+	mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent);
+}
+.rh-settings-tabs.rhe-fade-l.rhe-fade-r {
+	-webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+	mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+}
 .rh-feed-timeline[data-rhe-filter=own] .rhe-following,
 .rh-feed-timeline[data-rhe-filter=following] .rhe-own { display: none !important; }
 .footer a, .navbar a, .navbar-item, .dropdown-menu a, .search-button__label {
@@ -485,8 +529,10 @@
 		background-color: var(--rhe-input-bg) !important;
 		color: var(--rhe-bg) !important;
 	}
-	.input::placeholder {
-		color: #4A5553 !important;
+	/* Placeholders: lighter and italic, so empty fields don't read as filled. */
+	.input::placeholder, .rh-tzpick__input::placeholder {
+		color: #66726F !important;
+		font-style: italic;
 		opacity: 1 !important;
 	}
 	hr {
@@ -500,6 +546,7 @@
 	}
 	.textarea::placeholder, .rh-feed-composer__textarea::placeholder {
 		color: rgba(203, 217, 215, 0.65) !important;
+		font-style: italic;
 		opacity: 1 !important;
 	}
 	#feedback .rh-top-comment {
@@ -757,6 +804,177 @@
 	}
 	.notifications .rh-feed-post__time, .rhe-notif-group__meta {
 		color: rgba(203, 217, 215, 0.55) !important;
+	}
+	/* Settings: teal surfaces and accent in place of the site's plum and blue. */
+	.rh-settings .card {
+		background-color: var(--rhe-surface-1) !important;
+		box-shadow: none !important;
+	}
+	.rh-settings .button.is-primary {
+		background-color: var(--rhe-accent) !important;
+		border-color: transparent !important;
+		color: var(--rhe-bg) !important;
+		font-weight: 700;
+	}
+	/* Remove and Deactivate are crimson outlines natively. Neutral outline instead. */
+	.rh-settings .button.rh-avatar-remove, .rh-settings .rh-danger-zone__button:not(.rh-danger-zone__button--go) {
+		background-color: transparent !important;
+		border-color: rgba(203, 217, 215, 0.3) !important;
+		color: var(--rhe-text) !important;
+	}
+	.rh-settings .rh-danger-zone {
+		border-top-color: var(--rhe-border) !important;
+	}
+	.rh-settings .rh-danger-zone__title {
+		color: var(--rhe-text) !important;
+	}
+	.rh-settings .rh-danger-zone__button--go {
+		background-color: transparent !important;
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-settings .rh-danger-zone__button--go:not([disabled]) {
+		background-color: var(--rhe-accent) !important;
+		border-color: transparent !important;
+		color: var(--rhe-bg) !important;
+	}
+	.rh-settings .rh-danger-zone__check input {
+		accent-color: var(--rhe-accent) !important;
+	}
+	.rh-settings .file-cta {
+		background-color: var(--rhe-surface-2) !important;
+		border-color: var(--rhe-border) !important;
+		color: var(--rhe-text) !important;
+	}
+	.rh-settings .rh-avatar-row #image_preview {
+		background-color: var(--rhe-surface-2) !important;
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-settings .input:focus, .rh-settings .textarea:focus, .rh-settings select:focus {
+		border-color: var(--rhe-accent) !important;
+		box-shadow: 0 0 0 3px var(--rhe-accent-dim) !important;
+	}
+	/* Bio Markdown / Preview tabs keep their underline, in teal. */
+	.rh-settings .tabs:not(.rh-settings-tabs) ul {
+		border-bottom-color: var(--rhe-border) !important;
+	}
+	.rh-settings .tabs:not(.rh-settings-tabs) li a {
+		color: rgba(203, 217, 215, 0.65) !important;
+	}
+	.rh-settings .tabs:not(.rh-settings-tabs) li.is-active a {
+		color: var(--rhe-accent) !important;
+		border-bottom-color: var(--rhe-accent) !important;
+	}
+	/* Switches: off is a quiet outline, on is solid teal. */
+	.rh-settings .rh-pill-toggle__state, .rh-settings .rh-tile-toggle__state {
+		background-color: var(--rhe-bg) !important;
+		border-color: var(--rhe-border) !important;
+		color: rgba(203, 217, 215, 0.55) !important;
+	}
+	.rh-settings .rh-pill-toggle__input:checked + .rh-pill-toggle__state,
+	.rh-settings .rh-tile-toggle__input:checked + .rh-tile-toggle__tile .rh-tile-toggle__state {
+		background-color: var(--rhe-accent) !important;
+		border-color: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
+	}
+	.rh-settings .rh-pill-toggle__input:focus-visible + .rh-pill-toggle__state,
+	.rh-settings .rh-tile-toggle__input:focus-visible + .rh-tile-toggle__tile {
+		border-color: var(--rhe-accent) !important;
+		box-shadow: 0 0 0 3px var(--rhe-accent-dim) !important;
+	}
+	.rh-settings .rh-tile-toggle__tile {
+		background-color: var(--rhe-bg) !important;
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-settings .rh-tile-toggle__icon {
+		background-color: var(--rhe-surface-2) !important;
+		color: rgba(203, 217, 215, 0.55) !important;
+	}
+	.rh-settings .rh-tile-toggle__input:checked + .rh-tile-toggle__tile {
+		background-color: var(--rhe-accent-dim) !important;
+		border-color: rgba(0, 219, 172, 0.45) !important;
+	}
+	.rh-settings .rh-tile-toggle__input:checked + .rh-tile-toggle__tile .rh-tile-toggle__icon {
+		background-color: rgba(0, 219, 172, 0.16) !important;
+		color: var(--rhe-accent) !important;
+	}
+	.rh-settings .table td, .rh-settings .table th, .rh-settings .notif-prefs .notif-section-title {
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-settings .notif-prefs tbody tr:not(.notif-section):hover {
+		background-color: rgba(0, 219, 172, 0.04) !important;
+	}
+	.rh-settings .rh-autosave-hint i {
+		color: var(--rhe-accent) !important;
+	}
+	/* Sign-in methods: plum rows and a green badge natively. */
+	.rh-settings .sign-in-methods .sign-in-list {
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method {
+		background-color: var(--rhe-bg) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method + .sign-in-method {
+		border-top-color: var(--rhe-border) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method__mark {
+		background-color: var(--rhe-surface-2) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method__state {
+		background-color: var(--rhe-accent-dim) !important;
+		color: var(--rhe-accent) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method__connect, .rh-tzpick__device {
+		background-color: transparent !important;
+		border-color: rgba(203, 217, 215, 0.3) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method__connect {
+		color: var(--rhe-text) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method__connect:hover, .rh-tzpick__device:hover {
+		background-color: var(--rhe-surface-2) !important;
+	}
+	.rh-settings .sign-in-methods .sign-in-method__connect:focus-visible {
+		outline-color: var(--rhe-accent) !important;
+	}
+	/* Time zone picker: plum field, list and button, navy UTC box, blue accents natively. */
+	.rh-tzpick__input {
+		background-color: var(--rhe-input-bg) !important;
+		color: var(--rhe-bg) !important;
+	}
+	.rh-tzpick__search > i {
+		color: #66726F !important;
+	}
+	.rh-tzpick__input:focus {
+		border-color: var(--rhe-accent) !important;
+		box-shadow: 0 0 0 3px var(--rhe-accent-dim) !important;
+	}
+	.rh-tzpick__utc, .rh-tzpick__list {
+		background-color: var(--rhe-bg) !important;
+		border-color: var(--rhe-border) !important;
+	}
+	.rh-tzpick__row.is-active, .rh-tzpick__row:hover {
+		background-color: var(--rhe-surface-2) !important;
+	}
+	.rh-tzpick__row.is-current.is-active, .rh-tzpick__row.is-current:hover {
+		background-color: var(--rhe-accent-dim) !important;
+	}
+	.rh-tzpick__row.is-current .rh-tzpick__name, .rh-tzpick__current > i, .rh-tzpick__device, .rh-tzpick__hint {
+		color: var(--rhe-accent) !important;
+	}
+	.rhe-char-count {
+		color: rgba(203, 217, 215, 0.55) !important;
+	}
+	.rhe-char-count.is-near {
+		color: var(--rhe-text) !important;
+	}
+	/* Settings tabs: pills in the notification filter colors. */
+	.rh-settings .rh-settings-tabs li a {
+		background-color: var(--rhe-surface-2) !important;
+		color: var(--rhe-text) !important;
+	}
+	.rh-settings .rh-settings-tabs li.is-active a {
+		background-color: var(--rhe-accent) !important;
+		color: var(--rhe-bg) !important;
 	}
 	/* Native dark stage and contact circles are plum. */
 	.rh-pubgraph__stage {
@@ -1151,6 +1369,59 @@
 		} finally {
 			clearTimeout(timeout);
 		}
+	}
+
+	// ---- Settings tabs ----
+	// Pills scroll sideways on phones. Fades mark hidden tabs; the active one stays in view.
+	function settingsTabs() {
+		const bar = document.querySelector('.rh-settings-tabs');
+		const list = bar?.querySelector('ul');
+		if (!list || bar.dataset.rheTabs) return;
+		bar.dataset.rheTabs = 'true';
+		const fade = () => {
+			const max = bar.scrollWidth - bar.clientWidth;
+			bar.classList.toggle('rhe-fade-l', bar.scrollLeft > 2);
+			bar.classList.toggle('rhe-fade-r', bar.scrollLeft < max - 2);
+		};
+		const reveal = () => {
+			const li = list.querySelector('li.is-active');
+			if (!li) return;
+			const b = bar.getBoundingClientRect();
+			const r = li.getBoundingClientRect();
+			if (r.left < b.left) bar.scrollLeft -= b.left - r.left + 24;
+			else if (r.right > b.right) bar.scrollLeft += r.right - b.right + 24;
+			fade();
+		};
+		bar.addEventListener('scroll', fade, { passive: true });
+		window.addEventListener('resize', fade);
+		// The site switches tabs (click or #hash) by moving li.is-active.
+		new MutationObserver(reveal).observe(list, { subtree: true, attributes: true, attributeFilter: ['class'] });
+		reveal();
+		fade();
+	}
+
+	// ---- Live character counter on length-limited fields ----
+	// Bio only for now. Widen COUNTED to cover more maxlength fields.
+	const COUNTED = '#id_bio';
+	function addCharCounters() {
+		document.querySelectorAll(COUNTED).forEach(field => {
+			const max = field.maxLength;
+			if (max < 1 || field.dataset.rheCount) return;
+			field.dataset.rheCount = 'true';
+			const out = document.createElement('p');
+			out.className = 'help rhe-char-count';
+			out.id = `${field.id || field.name}-rhe-count`;
+			field.after(out);
+			field.setAttribute('aria-describedby', [field.getAttribute('aria-describedby'), out.id].filter(Boolean).join(' '));
+			// Last tenth of the limit stands out.
+			const update = () => {
+				const n = field.value.length;
+				out.textContent = `${n} / ${max}`;
+				out.classList.toggle('is-near', max - n <= Math.ceil(max / 10));
+			};
+			field.addEventListener('input', update);
+			update();
+		});
 	}
 
 	async function enhanceNotifications() {
@@ -1651,6 +1922,8 @@
 	cleanAuthoredGrid();
 	quietSearchBrowse();
 	enhanceNotifications();
+	settingsTabs();
+	addCharCounters();
 	refreshComments();
 
 	// Archived comments (and the changelog card) can load in after an AJAX call,
