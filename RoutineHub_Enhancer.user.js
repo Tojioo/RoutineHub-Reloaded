@@ -1,17 +1,39 @@
 // ==UserScript==
 // @name         RoutineHub Enhancer
 // @version      1.0.0-alpha41
-// @license      MIT
+// @license      ANC-SA-1.0
 // @author       Tojioo
 // @description  Dark mode plus UX improvements for RoutineHub: quick changelog access, collapsible comment threads
 // @match        https://routinehub.co/*
 // @grant        GM.addStyle
 // ==/UserScript==
 
-// Based on Dark Mode RoutineHub by gluebyte (MIT):
-// https://routinehub.co/user/gluebyte
-// Original dark mode styling and layout tweaks kept intact below; UX additions
-// (changelog quick-access button, collapsible comment threads) are new.
+// Copyright (C) 2026 Tojioo. Licensed under ANC-SA-1.0:
+// https://github.com/Tojioo/RoutineHub-Reloaded/blob/main/LICENSE
+
+// Parts of the dark mode and layout CSS and the homepage card reorder derive
+// from Dark Mode RoutineHub by gluebyte (https://routinehub.co/shortcut/25368/).
+// That code is used under the MIT License:
+//
+// Copyright (c) 2026 gluebyte
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 (function () {
 	"use strict";

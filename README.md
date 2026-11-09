@@ -5,9 +5,9 @@ theming, styled around a custom teal/petrol palette. Internal codename is
 **RoutineHub Enhancer** through the alpha series; renames to **RoutineHub
 Reloaded** at `1.0.0`.
 
-Built as a fork of gluebyte's [Dark Mode RoutineHub](https://routinehub.co/user/gluebyte)
-(MIT, v1.1) — that script's dark-mode CSS and layout tweaks are kept intact
-as the base; everything else is additive.
+Started as a fork of gluebyte's [Dark Mode RoutineHub](https://routinehub.co/shortcut/25368/).
+Its dark mode rules and layout tweaks were the base. The colors are now this
+script's own palette.
 
 ## Why
 
@@ -55,5 +55,6 @@ per-page breakdown, version history, and code documentation.
 
 ## License
 
-MIT — see [`LICENSE`](./LICENSE). Includes code from gluebyte's Dark Mode
-RoutineHub (MIT, v1.1).
+[ANC-SA-1.0](./LICENSE), a custom attribution, non-commercial, share-alike
+source license. Includes MIT code from gluebyte's Dark Mode RoutineHub. Its
+notice is at the end of the LICENSE.
