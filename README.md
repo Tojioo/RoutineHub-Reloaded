@@ -26,7 +26,7 @@ This userscript fixes those directly on top of the live site.
 ## Install
 
 Requires a userscript manager (e.g. [Tampermonkey](https://www.tampermonkey.net/)
-or [Violentmonkey](https://violentmonkey.github.io/)). Install
+or [Violentmonkey](https://violentmonkey.github.io/). [Userscripts](https://github.com/quoid/userscripts/#installation) for iOS & macOS). Install
 [`RoutineHub_Enhancer.user.js`](./RoutineHub_Enhancer.user.js) through it,
 then visit [routinehub.co](https://routinehub.co).
 
